@@ -132,7 +132,7 @@ h2 {
 
 .outro input {
     background-color: #ffffff;
-    border: 1px solid #95bfce;
+    border: 1px solid #080808;
     display: inline-block;
     padding: 7px 15px;
     font-size: 16px;
@@ -141,8 +141,8 @@ h2 {
 }
 
 .outro .submit-btn {
-    background-color: #568ea3;
-    border: 1px solid #568ea3;
+    background-color: #4d1c9c;
+    border: 1px solid #370677;
     border-radius: 10px;
     width: auto;
     display: inline-block;
@@ -155,8 +155,8 @@ h2 {
 }
 
 .outro .submit-btn:hover {
-    background-color: #95bfce;
-    border: 1px solid #95bfce;
+    background-color: #5b1ca3;
+    border: 1px solid #6313ad;
 }
 
 /* buttons */
