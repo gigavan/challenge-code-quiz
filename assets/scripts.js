@@ -154,12 +154,12 @@ function saveHighScore(event) {
 
 let questions = [
     {
-        question: 'Commonly used data types DO NOT include:',
+        question: 'What does CSS stand for?',
         answer: [
-            { text: '1. strings', correct: false },
-            { text: '2. booleans', correct: false },
-            { text: '3. alerts', correct: true },
-            { text: '4. numbers', correct: false }
+            { text: '1. Common Style Sheet', correct: false },
+            { text: '2. Colorful Style Sheet', correct: false },
+            { text: '3. Cascading Style Sheet', correct: true },
+            { text: '4. Computer Style Sheet', correct: false }
         ]
     },
     {
@@ -190,12 +190,12 @@ let questions = [
         ]
     },
     {
-        question: 'A very useful tool used during development and debugging for printing content to the debugger is:',
+        question: 'What does HTML stand for',
         answer: [
-            { text: '1. JavaScript', correct: false },
-            { text: '2. terminal/bash', correct: false },
-            { text: '3. for loops', correct: false },
-            { text: '4. console.log', correct: true }
+            { text: '1. Hyper Text Preprocessor', correct: false },
+            { text: '2. Hyper Text Medium Language', correct: false },
+            { text: '3. Hyper Text Multiple Language', correct: false },
+            { text: '4. Hyper Text Markup Language', correct: true }
         ]
     },
     {
@@ -216,31 +216,5 @@ let questions = [
             { text: '4. none of the above', correct: false }
         ]
     },
-    {
-        question: 'Javascript is an ___ language?',
-        answer: [
-            { text: '1. object-oriented', correct: true },
-            { text: '2. object-based', correct: false },
-            { text: '3. procedural', correct: false },
-            { text: '4. none of the above', correct: false }
-        ]
-    },
-    {
-        question: "Which declaration provides the value of a function?",
-        answer: [
-            { text: '1. cancel', correct: false },
-            { text: '2. return', correct: true },
-            { text: '3. continue', correct: false },
-            { text: '4. valueOf', correct: false }
-        ]
-    },
-    {
-        question: "How are objects compared when they are checked with the strict equality operator?",
-        answer: [
-            { text: '1. their references are compared', correct: true },
-            { text: '2. the contents of the objects are compared', correct: false },
-            { text: '3. both 1 and 2', correct: false },
-            { text: '4. none of the above', correct: false }
-        ]
-    }
+
 ];
