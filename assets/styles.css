@@ -48,3 +48,31 @@ form {
     padding-bottom: 0em;
     gap: 10px;
 }
+
+.closing-message {
+    font-size: 1.3em;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+input {
+    margin-top: 1.7em;
+    margin-bottom: 1.7em;
+    width: 70px;
+}
+
+.submit-btn {
+    border-radius: 5px;
+    font-size: 1.5rem;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.submit-btn:hover {
+    background-color: black;
+    color: white;
+}
+.view-score-list {
+    padding-inline-start: 0px;
+    font-size: 1.3em;
+}
