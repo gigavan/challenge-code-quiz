@@ -1,385 +1,126 @@
-const QUESTION_BANK = [
-  {
-    id:"cloud-opex", domain:"Cloud concepts", concept:"CapEx vs OpEx",
-    q:"A company wants to avoid large upfront hardware purchases and instead pay monthly for the cloud resources it consumes. Which financial model best describes this?",
-    options:["Capital expenditure (CapEx)","Operational expenditure (OpEx)","Depreciation-only accounting","Sunk-cost accounting"], answer:1,
-    explanation:"Cloud consumption is commonly associated with operational expenditure because spending is tied to ongoing usage rather than a large upfront infrastructure purchase.",
-    transfer:"If demand doubles for only one month, which model makes it easier to scale spending up temporarily and then back down?"
-  },
-  {
-    id:"cloud-shared", domain:"Cloud concepts", concept:"Shared responsibility",
-    q:"In an Azure virtual machine, who is generally responsible for patching the guest operating system?",
-    options:["Microsoft only","The customer","The internet service provider","The hardware manufacturer"], answer:1,
-    explanation:"For IaaS virtual machines, Microsoft secures the physical infrastructure, while the customer is responsible for the guest OS, applications, data, identities, and configuration.",
-    transfer:"How would this responsibility change if the workload moved from an Azure VM to a fully managed SaaS application?"
-  },
-  {
-    id:"cloud-public", domain:"Cloud concepts", concept:"Cloud models",
-    q:"Which cloud model provides computing resources over infrastructure shared across multiple organizations while the cloud provider owns and operates the physical hardware?",
-    options:["Private cloud","Public cloud","On-premises datacenter","Air-gapped edge only"], answer:1,
-    explanation:"A public cloud uses provider-owned infrastructure offered to many customers, with logical isolation between tenants.",
-    transfer:"Which model would an organization choose if it wanted cloud-style management but dedicated infrastructure under its own control?"
-  },
-  {
-    id:"cloud-scale", domain:"Cloud concepts", concept:"Scalability and elasticity",
-    q:"An online store automatically adds compute resources during a flash sale and removes them afterward. Which cloud characteristic is being demonstrated most directly?",
-    options:["Elasticity","Data sovereignty","Capital depreciation","Fault domain isolation"], answer:0,
-    explanation:"Elasticity is the ability to dynamically add or remove resources as demand changes.",
-    transfer:"If the store permanently upgraded to larger servers because its normal workload grew, would that be elasticity or scaling?"
-  },
-  {
-    id:"arch-region", domain:"Azure architecture and services", concept:"Regions and availability zones",
-    q:"A company wants an Azure application to remain available if a single datacenter in an Azure region fails. Which design is the best fit?",
-    options:["Deploy resources across Availability Zones","Use only one larger virtual machine","Place all resources in one resource group","Use a management group"], answer:0,
-    explanation:"Availability Zones are physically separate datacenter groupings within a region and are designed to improve resiliency against datacenter-level failures.",
-    transfer:"If the requirement instead covered the loss of an entire Azure region, what larger geographic design decision would you need to consider?"
-  },
-  {
-    id:"arch-rg", domain:"Azure architecture and services", concept:"Resource groups",
-    q:"What is the primary purpose of an Azure resource group?",
-    options:["Provide a logical container for related Azure resources","Create a private network connection to Azure","Replace Microsoft Entra ID","Guarantee cross-region disaster recovery"], answer:0,
-    explanation:"A resource group is a logical container used to organize and manage related Azure resources.",
-    transfer:"Could resources in one resource group be located in different Azure regions?"
-  },
-  {
-    id:"arch-vnet", domain:"Azure architecture and services", concept:"Virtual networks",
-    q:"Which Azure service provides a logically isolated private network for Azure resources?",
-    options:["Azure Virtual Network","Azure Policy","Azure Monitor","Microsoft Purview"], answer:0,
-    explanation:"Azure Virtual Network (VNet) provides private IP addressing, subnets, routing, and network isolation for Azure resources.",
-    transfer:"What feature would you use to divide a VNet into smaller address ranges for different application tiers?"
-  },
-  {
-    id:"arch-expressroute", domain:"Azure architecture and services", concept:"ExpressRoute vs VPN Gateway",
-    q:"A bank requires a private connection from its on-premises network to Azure that does not traverse the public internet. Which service best matches the requirement?",
-    options:["Azure VPN Gateway","Azure ExpressRoute","Azure DNS","Azure Traffic Manager"], answer:1,
-    explanation:"ExpressRoute provides private connectivity between on-premises infrastructure and Microsoft cloud services through a connectivity provider. A VPN Gateway uses encrypted tunnels over the public internet.",
-    transfer:"If the company instead wanted a lower-cost encrypted site-to-site connection over the public internet, which service would fit better?"
-  },
-  {
-    id:"arch-storage", domain:"Azure architecture and services", concept:"Storage redundancy",
-    q:"Which Azure Storage redundancy option keeps synchronous copies across separate Availability Zones within the primary region?",
-    options:["LRS","ZRS","GRS","RA-GRS"], answer:1,
-    explanation:"Zone-redundant storage (ZRS) synchronously replicates data across Availability Zones in the primary region.",
-    transfer:"Which family of redundancy options would you consider if the requirement included replication to a secondary Azure region?"
-  },
-  {
-    id:"arch-serverless", domain:"Azure architecture and services", concept:"Serverless compute",
-    q:"Which Azure service is designed to run event-driven code without requiring you to manage virtual machines?",
-    options:["Azure Functions","Azure Virtual Machines","Azure Dedicated Host","Azure Virtual Desktop"], answer:0,
-    explanation:"Azure Functions is a serverless compute service for running event-driven code while Azure manages the underlying infrastructure.",
-    transfer:"What would make an Azure VM a better choice than Functions for a workload?"
-  },
-  {
-    id:"arch-appservice", domain:"Azure architecture and services", concept:"PaaS compute",
-    q:"A team wants to host a web application without managing the underlying operating system. Which Azure service is designed for this scenario?",
-    options:["Azure App Service","Azure Virtual Machines","Azure ExpressRoute","Azure Files"], answer:0,
-    explanation:"Azure App Service is a managed platform for hosting web applications and APIs without requiring the customer to manage the underlying OS.",
-    transfer:"Compared with a VM, which layer of management responsibility is reduced when using App Service?"
-  },
-  {
-    id:"arch-entra", domain:"Azure architecture and services", concept:"Microsoft Entra ID",
-    q:"Which service is Azure's cloud-based identity and access management service for users, groups, and applications?",
-    options:["Microsoft Entra ID","Azure Load Balancer","Azure Backup","Azure Advisor"], answer:0,
-    explanation:"Microsoft Entra ID is Microsoft's cloud identity and access management service.",
-    transfer:"Which authorization feature would you combine with Entra identities to control what a user can do to Azure resources?"
-  },
-  {
-    id:"gov-rbac", domain:"Azure management and governance", concept:"Azure RBAC",
-    q:"An administrator needs to let a user restart virtual machines but should not give that user full control of the subscription. What should the administrator use?",
-    options:["Azure role-based access control (RBAC)","Azure DNS","Availability Zones","Azure Front Door"], answer:0,
-    explanation:"Azure RBAC provides fine-grained authorization by assigning roles to security principals at scopes such as a resource, resource group, subscription, or management group.",
-    transfer:"Why is assigning the narrowest appropriate role and scope considered a good security practice?"
-  },
-  {
-    id:"gov-policy", domain:"Azure management and governance", concept:"Azure Policy",
-    q:"An organization wants to require every new Azure resource to use approved regions and specific tags. Which service should it use?",
-    options:["Azure Policy","Azure Functions","Azure Bastion","Azure Queue Storage"], answer:0,
-    explanation:"Azure Policy evaluates resources against organizational rules and can audit, deny, modify, or remediate configurations depending on the policy effect.",
-    transfer:"How is Azure Policy different from RBAC even though both are governance tools?"
-  },
-  {
-    id:"gov-lock", domain:"Azure management and governance", concept:"Resource locks",
-    q:"Which Azure feature can help prevent an administrator from accidentally deleting a critical resource?",
-    options:["Resource lock","Network security group","Cost alert","Availability set"], answer:0,
-    explanation:"A CanNotDelete resource lock can prevent deletion of a resource even when a user otherwise has permission to delete it.",
-    transfer:"Would a resource lock replace RBAC permissions, or does it add another control layer?"
-  },
-  {
-    id:"gov-cost", domain:"Azure management and governance", concept:"Cost Management",
-    q:"Which Azure capability is intended to analyze cloud spending, create budgets, and monitor cost trends?",
-    options:["Microsoft Cost Management","Azure DNS","Microsoft Entra Domain Services","Azure Load Balancer"], answer:0,
-    explanation:"Microsoft Cost Management provides tools for analyzing, allocating, monitoring, and optimizing cloud costs, including budgets and alerts.",
-    transfer:"What would a budget alert tell you that a service-health alert would not?"
-  },
-  {
-    id:"gov-advisor", domain:"Azure management and governance", concept:"Azure Advisor",
-    q:"Which Azure service provides personalized recommendations for areas such as cost, reliability, security, operational excellence, and performance?",
-    options:["Azure Advisor","Azure Queue Storage","Azure VPN Gateway","Azure DevTest Labs"], answer:0,
-    explanation:"Azure Advisor analyzes deployed resources and provides recommendations to help improve cost, performance, reliability, security, and operational excellence.",
-    transfer:"Would Advisor automatically become the enforcement mechanism for a mandatory company rule, or would Azure Policy be more appropriate?"
-  },
-  {
-    id:"gov-monitor", domain:"Azure management and governance", concept:"Azure Monitor",
-    q:"Which Azure service is the central platform for collecting, analyzing, and acting on telemetry from Azure and other environments?",
-    options:["Azure Monitor","Azure Resource Manager","Azure Files","Azure ExpressRoute"], answer:0,
-    explanation:"Azure Monitor collects and analyzes metrics, logs, traces, and other telemetry so you can understand resource health and performance and create alerts.",
-    transfer:"If CPU usage stays above a threshold, which Azure capability would you configure to notify an operations team?"
-  }
+const Q=(id,domain,concept,q,options,answer,explanation,transfer)=>({id,domain,concept,q,options,answer,explanation,transfer});
+const C="Cloud concepts",A="Azure architecture and services",G="Azure management and governance";
+const QUESTION_BANK=[
+Q("c01",C,"Cloud computing","Which statement best defines cloud computing?",["Delivery of computing services over the internet","Buying only physical servers","Running software without networking","Using only private datacenters"],0,"Cloud computing delivers services such as compute, storage, databases and networking over the internet on demand.","Why does on-demand provisioning change how quickly an organization can launch a project?"),
+Q("c02",C,"Shared responsibility","For an Azure IaaS virtual machine, who normally patches the guest operating system?",["Microsoft","The customer","The ISP","The hardware vendor"],1,"With IaaS, Microsoft manages the physical infrastructure while the customer manages the guest OS, apps, data and configuration.","How would that responsibility change for a SaaS application?"),
+Q("c03",C,"Cloud models","Which model uses provider-owned infrastructure shared logically among many customers?",["Public cloud","Private cloud","On-premises only","Air-gapped edge"],0,"A public cloud uses provider-owned shared infrastructure with logical tenant isolation.","When might a hybrid cloud be preferred instead?"),
+Q("c04",C,"Cloud models","A company keeps sensitive systems on-premises but connects them to Azure services. Which cloud model is this?",["Public only","Private only","Hybrid cloud","SaaS only"],2,"Hybrid cloud combines on-premises or private infrastructure with public cloud services.","What business constraint might make hybrid cloud useful during a migration?"),
+Q("c05",C,"Consumption model","What is the main idea of consumption-based cloud pricing?",["Pay for what you use","Pay one lifetime fee","Buy all hardware up front","Costs never vary"],0,"Consumption-based pricing ties cost to actual resource usage rather than requiring all infrastructure up front.","Why is this useful for seasonal workloads?"),
+Q("c06",C,"CapEx vs OpEx","A company replaces a large server purchase with monthly Azure usage charges. Which spending model increases?",["CapEx","OpEx","Depreciation only","Sunk cost"],1,"Recurring cloud consumption is generally categorized as operational expenditure.","How can OpEx improve flexibility when demand is uncertain?"),
+Q("c07",C,"Serverless","Which description best matches serverless computing?",["No servers physically exist","The provider manages infrastructure while code runs on demand","Every workload uses a dedicated VM","Only storage is available"],1,"Serverless abstracts server management from the customer while executing code or workloads on demand.","What type of event-driven workload fits serverless well?"),
+Q("c08",C,"High availability","What does high availability primarily aim to improve?",["Service uptime","Data compression","Password length","Capital depreciation"],0,"High availability designs reduce service interruption and increase uptime.","How can multiple availability zones improve availability?"),
+Q("c09",C,"Scalability","A company permanently increases VM capacity as its normal user base grows. What characteristic is this?",["Scalability","Sovereignty","Governance","Encryption"],0,"Scalability is the ability to increase or decrease capacity to meet workload demand.","How is elasticity different from this example?"),
+Q("c10",C,"Elasticity","An app automatically adds instances for a flash sale and removes them afterward. What is this?",["Elasticity","Compliance","Capital expenditure","Archiving"],0,"Elasticity dynamically adds and removes resources as demand changes.","Why can elasticity reduce wasted spending?"),
+Q("c11",C,"Reliability","Which cloud benefit focuses on recovering from failures and continuing operation?",["Reliability","Licensing","Tagging","Peering"],0,"Reliability includes resilient design, recovery and continued operation despite failures.","How does redundancy contribute to reliability?"),
+Q("c12",C,"Predictability","Why can cloud services improve cost predictability?",["Usage and pricing tools can estimate and track spend","Cloud costs are always fixed","Azure has no variable charges","All services are free"],0,"Pricing calculators, budgets and usage data help forecast and monitor cloud spending.","What would make a monthly cloud bill less predictable?"),
+Q("c13",C,"Cloud security benefits","Which statement best describes a cloud security benefit?",["Providers can supply centralized security capabilities at scale","Security becomes unnecessary","Customers have zero responsibility","Passwords are eliminated automatically"],0,"Cloud providers offer broad security tooling, but customers still retain responsibilities under the shared responsibility model.","Why doesn't moving to the cloud eliminate customer security work?"),
+Q("c14",C,"Manageability","Which is an example of cloud manageability?",["Deploying resources through a portal, CLI or automation","Replacing every network with paper records","Disabling monitoring","Buying hardware before every test"],0,"Cloud platforms support centralized management and automation through multiple interfaces.","Why does automation improve repeatability?"),
+Q("c15",C,"IaaS","Which service model gives the customer the most control over the operating system?",["IaaS","PaaS","SaaS","All provide identical control"],0,"IaaS exposes virtualized infrastructure and leaves OS and application management largely to the customer.","What management burden comes with that extra control?"),
+Q("c16",C,"PaaS","A developer wants to deploy a web app without maintaining the underlying OS. Which model fits best?",["IaaS","PaaS","Colocation","Bare metal only"],1,"PaaS manages more of the underlying platform so developers can focus on the application.","How does PaaS shift the shared responsibility boundary?"),
+Q("c17",C,"SaaS","Microsoft 365 is most closely associated with which cloud service model?",["IaaS","PaaS","SaaS","Private networking"],2,"SaaS provides complete applications managed by the provider for end users.","What does a customer still commonly manage in SaaS?"),
+
+Q("a01",A,"Regions","What is an Azure region?",["A geographic area containing one or more datacenters","A user account","A billing invoice","A VM disk"],0,"An Azure region is a geographic area containing one or more datacenters connected through a low-latency network.","Why might data residency affect region selection?"),
+Q("a02",A,"Region pairs","What is a common purpose of Azure region pairs?",["Support resiliency and disaster recovery planning","Replace subscriptions","Create passwords","Remove all latency"],0,"Region pairing can support platform resiliency and disaster recovery strategies across geographically separated regions.","Would every workload automatically fail over just because regions are paired?"),
+Q("a03",A,"Sovereign regions","Why do sovereign Azure regions exist?",["To address specific government or regulatory requirements","To provide only gaming services","To avoid identity controls","To eliminate billing"],0,"Sovereign regions are designed for specific compliance, governmental or jurisdictional requirements.","What kind of organization might require a sovereign cloud?"),
+Q("a04",A,"Availability zones","A workload must survive failure of one datacenter in a region. What should you use?",["Availability Zones","One larger VM","A tag","A management group"],0,"Availability Zones are physically separate datacenter groupings within an Azure region.","What additional design would be needed for complete region failure?"),
+Q("a05",A,"Resource groups","What is the primary purpose of an Azure resource group?",["Logical container for related resources","Private network tunnel","Identity provider","Physical datacenter"],0,"Resource groups logically organize Azure resources for management, access and lifecycle operations.","Can resources in one resource group be in different Azure regions?"),
+Q("a06",A,"Subscriptions","What does an Azure subscription primarily provide?",["A billing and access-management boundary","A physical rack","A DNS record","A password vault only"],0,"Subscriptions act as billing and management boundaries and contain resource groups and resources.","Why might a company use separate subscriptions for departments?"),
+Q("a07",A,"Management groups","What is the purpose of Azure management groups?",["Organize and govern multiple subscriptions","Store blobs","Host websites","Create VPN tunnels"],0,"Management groups provide a governance scope above subscriptions.","How can policy inheritance help a large enterprise?"),
+Q("a08",A,"Azure hierarchy","Which order is correct from broadest to narrowest management scope?",["Management group → subscription → resource group → resource","Resource → management group → subscription → resource group","Subscription → tenant → region → resource","Resource group → management group → resource → subscription"],0,"Management groups can contain subscriptions; subscriptions contain resource groups; resource groups contain resources.","At which scopes can Azure RBAC assignments be applied?"),
+Q("a09",A,"Virtual machines","Which Azure compute option provides a full virtualized operating system you manage?",["Azure Virtual Machines","Azure Functions","Azure DNS","Azure Policy"],0,"Azure Virtual Machines provide IaaS compute with control of the guest OS.","When would a VM be preferable to App Service?"),
+Q("a10",A,"VM scale sets","What are Virtual Machine Scale Sets designed to do?",["Deploy and manage a group of load-balanced VMs that can scale","Create users","Archive files only","Replace VNets"],0,"VM Scale Sets simplify deployment, management and scaling of sets of similar VMs.","What workload pattern benefits from autoscaling a VM set?"),
+Q("a11",A,"Availability sets","What do availability sets help protect against?",["Certain hardware and maintenance failures within a datacenter","Entire global internet failure","All application bugs","Incorrect passwords"],0,"Availability sets spread VMs across fault and update domains to reduce correlated failures.","How do availability sets differ from availability zones?"),
+Q("a12",A,"Azure Virtual Desktop","Which service delivers Windows desktops and applications from Azure?",["Azure Virtual Desktop","Azure DNS","Azure Files Sync","Azure Policy"],0,"Azure Virtual Desktop provides cloud-hosted Windows desktops and apps.","What user scenario could benefit from centrally hosted desktops?"),
+Q("a13",A,"Containers","Why might containers be chosen instead of full VMs?",["They package apps with dependencies with less OS overhead","They always need more hardware","They replace identity","They cannot scale"],0,"Containers package applications and dependencies while sharing a host OS, usually with less overhead than VMs.","What does container orchestration add?"),
+Q("a14",A,"Azure Functions","Which Azure service is designed for event-driven serverless code?",["Azure Functions","Azure Dedicated Host","Azure Files","Azure VPN Gateway"],0,"Azure Functions executes event-driven code without requiring you to manage servers.","What billing advantage can event-driven execution provide?"),
+Q("a15",A,"App Service","Which service hosts web apps and APIs without requiring guest OS management?",["Azure App Service","Azure Virtual Machines only","Azure ExpressRoute","Azure Data Box"],0,"Azure App Service is a managed PaaS hosting platform for web apps and APIs.","What responsibility shifts to Microsoft compared with a VM?"),
+Q("a16",A,"Virtual networks","Which service provides a logically isolated network in Azure?",["Azure Virtual Network","Azure Advisor","Azure Monitor","Microsoft Purview"],0,"Azure Virtual Network provides private addressing, subnets, routing and isolation.","Why divide a VNet into subnets?"),
+Q("a17",A,"VNet peering","What does VNet peering enable?",["Private connectivity between virtual networks","Identity federation only","Cold storage","Cost budgeting"],0,"VNet peering connects Azure virtual networks privately over the Microsoft backbone.","Why might peering be preferable to sending traffic over the public internet?"),
+Q("a18",A,"Azure DNS","What is Azure DNS used for?",["Hosting and managing DNS domains and records","Patching VMs","Encrypting disks only","Creating budgets"],0,"Azure DNS hosts DNS zones and records using Azure infrastructure.","What does DNS translate for clients?"),
+Q("a19",A,"VPN vs ExpressRoute","A company wants encrypted site-to-site connectivity over the public internet. Which service fits?",["VPN Gateway","ExpressRoute","Azure Policy","Azure Advisor"],0,"VPN Gateway supports encrypted connectivity over the public internet.","What would you choose if the requirement explicitly said traffic must not traverse the public internet?"),
+Q("a20",A,"VPN vs ExpressRoute","A bank requires private connectivity to Azure that does not traverse the public internet. Which service fits?",["VPN Gateway","ExpressRoute","Azure DNS","Traffic Manager"],1,"ExpressRoute provides private connectivity to Microsoft cloud services through a connectivity provider.","Why can ExpressRoute be attractive for predictable enterprise connectivity?"),
+Q("a21",A,"Private endpoints","What does a private endpoint provide?",["A private IP address for accessing a supported Azure service from a VNet","A public website","A new subscription","A pricing estimate"],0,"Private endpoints expose supported services through a private IP in your virtual network.","How can private endpoints reduce public exposure?"),
+Q("a22",A,"Storage services","Which Azure storage service is best suited to unstructured object data such as images and video?",["Blob Storage","Azure Files","Queue Storage","Table Storage"],0,"Azure Blob Storage is optimized for unstructured object data.","When would Azure Files be a better fit?"),
+Q("a23",A,"Azure Files","Which Azure service provides managed SMB/NFS file shares?",["Azure Files","Blob Storage only","Azure Functions","Azure Policy"],0,"Azure Files provides managed cloud file shares accessible through common file protocols.","What migration scenario can Azure File Sync help with?"),
+Q("a24",A,"Storage tiers","Which Blob Storage access tier is intended for data accessed frequently?",["Hot","Cool","Archive","Offline-only"],0,"The hot tier is optimized for frequently accessed data.","Why might archive storage cost less but take longer to retrieve?"),
+Q("a25",A,"Storage redundancy","Which redundancy option synchronously copies data across availability zones in the primary region?",["LRS","ZRS","GRS","RA-GRS"],1,"Zone-redundant storage synchronously replicates across availability zones within a region.","Which redundancy family adds replication to a secondary region?"),
+Q("a26",A,"Storage tools","Which tool is a graphical application for working with Azure Storage data?",["Azure Storage Explorer","AzCopy","Azure Policy","Cloud Shell only"],0,"Azure Storage Explorer provides a GUI for browsing and managing storage accounts and data.","When might AzCopy be faster for scripted bulk transfers?"),
+Q("a27",A,"AzCopy","Which tool is a command-line utility optimized for copying data to and from Azure Storage?",["AzCopy","Azure Advisor","Microsoft Purview","Azure DNS"],0,"AzCopy is a command-line data transfer utility for Azure Storage.","Why is a CLI tool useful for repeatable transfers?"),
+Q("a28",A,"Azure File Sync","What does Azure File Sync allow?",["Cache Azure file shares on Windows Servers","Replace Entra ID","Create budgets","Host DNS zones"],0,"Azure File Sync can centralize file shares in Azure Files while caching them on Windows Servers.","How can this support a hybrid file-server environment?"),
+Q("a29",A,"Azure Migrate","What is Azure Migrate primarily used for?",["Assessing and migrating on-premises workloads to Azure","Creating user passwords","Monitoring only SaaS apps","Managing DNS records"],0,"Azure Migrate provides tools to discover, assess and migrate workloads to Azure.","Why perform an assessment before migration?"),
+Q("a30",A,"Azure Data Box","When is Azure Data Box especially useful?",["Moving very large datasets when network transfer is impractical","Creating RBAC roles","Hosting websites","Managing MFA"],0,"Data Box uses physical devices to move large amounts of data to or from Azure.","What limitation of network transfer does Data Box address?"),
+Q("a31",A,"Microsoft Entra ID","Which service provides cloud identity and access management for users, groups and apps?",["Microsoft Entra ID","Azure Load Balancer","Azure Backup","Azure Advisor"],0,"Microsoft Entra ID is Microsoft's cloud identity and access management service.","How does RBAC use Entra identities?"),
+Q("a32",A,"Entra Domain Services","What does Microsoft Entra Domain Services provide?",["Managed domain services such as domain join, LDAP and Kerberos/NTLM","Blob storage","Cost alerts","Public DNS only"],0,"Entra Domain Services provides managed traditional domain capabilities without customers managing domain controllers.","What legacy application need might make this useful?"),
+Q("a33",A,"Authentication","What does multifactor authentication require?",["Two or more verification factors","Only a longer password","A public IP","A resource lock"],0,"MFA requires more than one category of evidence, reducing reliance on a password alone.","Why does MFA reduce risk from a stolen password?"),
+Q("a34",A,"Single sign-on","What is the main benefit of single sign-on?",["Users authenticate once to access multiple authorized apps","Every app gets a different physical server","All permissions become admin","Passwords are sent publicly"],0,"SSO reduces repeated sign-ins by using a trusted identity session across authorized applications.","How can SSO improve user experience and centralize access control?"),
+Q("a35",A,"Passwordless","Which is an example of passwordless authentication?",["FIDO2 security key","Password plus password","Shared spreadsheet","Public IP address"],0,"FIDO2 keys, Windows Hello for Business and similar methods can authenticate without a traditional password.","What attack class can passwordless methods help reduce?"),
+Q("a36",A,"External identities","What are Microsoft Entra External Identities used for?",["Allowing partners, guests or customers to access resources with external identities","Creating storage tiers","Buying reservations","Scaling VMs"],0,"External Identities supports collaboration and customer/partner identity scenarios.","Why is guest access preferable to creating unmanaged shared accounts?"),
+Q("a37",A,"Conditional Access","What does Microsoft Entra Conditional Access do?",["Evaluates signals and enforces access controls","Copies storage blobs","Creates VNets","Calculates Azure prices"],0,"Conditional Access uses signals such as user, device, location and risk to apply access policies.","How might a policy treat a risky sign-in differently?"),
+Q("a38",A,"Azure RBAC","An admin should restart VMs but not manage the whole subscription. What should you use?",["Azure RBAC","Azure DNS","Availability Zones","Azure Front Door"],0,"Azure RBAC grants fine-grained permissions through roles at specific scopes.","Why is least privilege important when choosing a role and scope?"),
+Q("a39",A,"Zero Trust","Which principle is central to Zero Trust?",["Verify explicitly and use least privilege","Trust everything inside the network","Disable logging","Give every user admin rights"],0,"Zero Trust assumes breach, verifies explicitly and limits access through least privilege.","Why is network location alone not enough to establish trust?"),
+Q("a40",A,"Defense in depth","What is defense in depth?",["Using multiple security layers so one failure does not expose everything","Using one firewall only","Disabling identity controls","Keeping one backup"],0,"Defense in depth layers physical, identity, perimeter, network, compute, application and data protections.","Why are overlapping controls more resilient than a single control?"),
+Q("a41",A,"Defender for Cloud","What is Microsoft Defender for Cloud primarily designed to provide?",["Cloud security posture management and workload protection","DNS hosting","File synchronization","Subscription billing"],0,"Defender for Cloud helps assess security posture and protect cloud workloads.","How is a security recommendation different from an RBAC permission?"),
+
+Q("g01",G,"Cost factors","Which factor can directly affect Azure cost?",["Resource type, usage, region and data transfer","Monitor brightness","Keyboard layout","User wallpaper"],0,"Azure cost varies based on service type, consumption, region, data transfer and purchasing options.","Why can two identical workloads cost different amounts in different regions?"),
+Q("g02",G,"Pricing calculator","What is the Azure Pricing Calculator used for?",["Estimating expected Azure costs before deployment","Enforcing MFA","Creating VNets","Patching Windows"],0,"The Pricing Calculator estimates costs based on selected services, sizes and expected usage.","Why should estimates be revisited after real usage begins?"),
+Q("g03",G,"Cost Management","Which service helps analyze spending, create budgets and monitor cost trends?",["Microsoft Cost Management","Azure DNS","Entra Domain Services","Load Balancer"],0,"Microsoft Cost Management provides cost analysis, budgets, alerts and optimization information.","How is a budget alert different from a service health alert?"),
+Q("g04",G,"Tags","What is a common purpose of Azure tags?",["Add metadata for organization and cost allocation","Encrypt every packet","Create identities","Replace subscriptions"],0,"Tags add key-value metadata that can help organize resources and allocate costs.","Why might a CostCenter tag be useful?"),
+Q("g05",G,"Microsoft Purview","What is Microsoft Purview primarily associated with?",["Data governance, discovery and compliance capabilities","VM autoscaling","DNS resolution","VPN tunneling"],0,"Microsoft Purview provides data governance, risk and compliance capabilities across data estates.","Why is discovering sensitive data useful for governance?"),
+Q("g06",G,"Azure Policy","An organization requires approved regions and mandatory tags. Which service should enforce this?",["Azure Policy","Azure Functions","Azure Bastion","Queue Storage"],0,"Azure Policy evaluates resources against organizational standards and can audit, deny or remediate configurations.","How is Policy different from RBAC?"),
+Q("g07",G,"Resource locks","Which feature helps prevent accidental deletion of a critical resource?",["Resource lock","NSG","Cost alert","Availability set"],0,"A CanNotDelete lock can prevent deletion even when a user otherwise has permission.","Does a resource lock replace RBAC?"),
+Q("g08",G,"Azure portal","What is the Azure portal?",["A browser-based graphical interface for managing Azure","A physical datacenter","A storage protocol","A password standard"],0,"The Azure portal is a browser-based GUI for creating, configuring and monitoring Azure resources.","When might CLI automation be better than repeated portal clicks?"),
+Q("g09",G,"Cloud Shell","What is Azure Cloud Shell?",["A browser-accessible shell with Azure CLI and PowerShell tooling","A storage tier","A region pair","A VM hardware type"],0,"Cloud Shell provides an authenticated browser-based shell environment for Azure administration.","Why is Cloud Shell convenient when working from a new computer?"),
+Q("g10",G,"Azure CLI","Which command-line tool is cross-platform and uses commands beginning with az?",["Azure CLI","Azure Policy","Azure Advisor","Azure DNS"],0,"Azure CLI is a cross-platform command-line interface whose commands generally begin with az.","Why are CLI scripts useful for repeatable deployment tasks?"),
+Q("g11",G,"Azure PowerShell","Which tool manages Azure using PowerShell cmdlets?",["Azure PowerShell","AzCopy","Azure Storage Explorer","Data Box"],0,"Azure PowerShell provides PowerShell modules and cmdlets for Azure management.","When might an existing PowerShell administrator prefer this over Azure CLI?"),
+Q("g12",G,"Azure Arc","What is Azure Arc designed to help manage?",["Resources across Azure, on-premises and other clouds","Only Azure DNS records","Only user passwords","Only storage pricing"],0,"Azure Arc extends Azure management and governance capabilities to resources outside Azure.","Why is this useful in hybrid or multicloud environments?"),
+Q("g13",G,"Infrastructure as code","What does infrastructure as code mean?",["Defining infrastructure in machine-readable files for repeatable deployment","Buying hardware with code","Writing only application code","Managing everything manually"],0,"IaC represents infrastructure declaratively or programmatically so deployments can be versioned and repeated.","How does IaC reduce configuration drift?"),
+Q("g14",G,"ARM","What is Azure Resource Manager?",["The deployment and management service for Azure","A file protocol","A passwordless method","A storage tier"],0,"Azure Resource Manager is Azure's management layer for deploying, organizing and controlling resources.","Why do resource groups and RBAC integrate closely with ARM?"),
+Q("g15",G,"ARM templates","What is an ARM template?",["A declarative JSON file describing Azure resources to deploy","A VM image only","A cost invoice","A DNS zone"],0,"ARM templates describe desired Azure infrastructure declaratively for repeatable deployments.","What benefit does a declarative template provide over clicking through a portal?"),
+Q("g16",G,"Azure Advisor","Which service gives personalized recommendations for cost, reliability, security, performance and operational excellence?",["Azure Advisor","Azure Queue Storage","VPN Gateway","DevTest Labs"],0,"Azure Advisor analyzes deployed resources and provides optimization recommendations.","Would Advisor or Policy be better for enforcing a mandatory standard?"),
+Q("g17",G,"Azure Service Health","Which service communicates Azure service issues, planned maintenance and health advisories relevant to you?",["Azure Service Health","Azure Files","Azure DNS","Azure RBAC"],0,"Azure Service Health provides personalized information about service incidents, planned maintenance and advisories.","How is Service Health different from monitoring CPU usage on your VM?"),
+Q("g18",G,"Azure Monitor","Which platform collects and analyzes metrics, logs and telemetry from Azure resources?",["Azure Monitor","Azure Migrate","Azure Data Box","Entra External ID"],0,"Azure Monitor is the central observability platform for metrics, logs, alerts and application telemetry.","What could you configure if CPU usage stays above a threshold?"),
+Q("g19",G,"Log Analytics","What is a Log Analytics workspace used for?",["Collecting and querying log data with Azure Monitor Logs","Creating VPNs","Estimating prices","Hosting DNS"],0,"Log Analytics workspaces store and query log data used by Azure Monitor Logs.","Why can centralized logs speed troubleshooting?"),
+Q("g20",G,"Azure Monitor alerts","What do Azure Monitor alerts do?",["Notify or trigger actions when monitored conditions are met","Create users automatically by default","Replace all backups","Host web apps"],0,"Azure Monitor alerts evaluate signals and can notify people or trigger automated actions.","What alert might you configure for sustained high CPU?"),
+Q("g21",G,"Application Insights","What is Application Insights used for?",["Application performance monitoring and telemetry","Physical data shipment","DNS hosting","Subscription hierarchy"],0,"Application Insights, part of Azure Monitor, provides application performance and usage telemetry.","What application problem could request tracing help diagnose?")
 ];
 
-const STORAGE_KEY = "az900AdaptiveTrainerV2";
-const DOMAINS = [
-  {name:"Cloud concepts", weight:"25–30%"},
-  {name:"Azure architecture and services", weight:"35–40%"},
-  {name:"Azure management and governance", weight:"30–35%"}
-];
-
-const defaultState = () => ({
-  answered:0, correct:0, highConfidenceMisses:0, lastStudyDate:null, streak:0,
-  concepts:{}, confusions:[], history:[]
-});
-
-let state = loadState();
-let session = null;
-let selectedAnswer = null;
-
-const $ = (id) => document.getElementById(id);
-const views = ["dashboard-view","quiz-view","feynman-view","results-view"];
-
-function loadState(){
-  try { return {...defaultState(), ...(JSON.parse(localStorage.getItem(STORAGE_KEY)) || {})}; }
-  catch { return defaultState(); }
-}
-function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-function showView(id){ views.forEach(v => $(v).classList.toggle("hidden", v !== id)); window.scrollTo({top:0,behavior:"smooth"}); }
-function conceptState(concept){
-  if(!state.concepts[concept]) state.concepts[concept] = {attempts:0,correct:0,mastery:0,nextReview:0,interval:0,highConfidenceMisses:0};
-  return state.concepts[concept];
-}
-function daysBetween(a,b){ return Math.floor((new Date(b)-new Date(a))/86400000); }
-function updateStreak(){
-  const today = new Date().toISOString().slice(0,10);
-  if(state.lastStudyDate === today) return;
-  if(state.lastStudyDate && daysBetween(state.lastStudyDate,today) === 1) state.streak += 1;
-  else state.streak = 1;
-  state.lastStudyDate = today;
-}
-function masteryFor(concept){
-  const cs = state.concepts[concept];
-  return cs ? Math.round(cs.mastery || 0) : 0;
-}
-function overallMastery(){
-  const concepts = [...new Set(QUESTION_BANK.map(q=>q.concept))];
-  return Math.round(concepts.reduce((sum,c)=>sum+masteryFor(c),0)/concepts.length);
-}
-function dueCount(){
-  const now=Date.now();
-  return Object.values(state.concepts).filter(c=>c.attempts && (!c.nextReview || c.nextReview<=now)).length;
-}
-function domainMastery(name){
-  const concepts=[...new Set(QUESTION_BANK.filter(q=>q.domain===name).map(q=>q.concept))];
-  return Math.round(concepts.reduce((s,c)=>s+masteryFor(c),0)/concepts.length);
-}
-function priorityScore(q){
-  const cs=conceptState(q.concept), due = !cs.nextReview || cs.nextReview<=Date.now();
-  return (100-(cs.mastery||0))*2 + (cs.highConfidenceMisses||0)*45 + (due?35:0) + (cs.attempts===0?20:0) + Math.random()*8;
-}
-function buildAdaptiveQueue(count=10, weakOnly=false){
-  const pool=[...QUESTION_BANK].sort((a,b)=>priorityScore(b)-priorityScore(a));
-  let result=[], usedDomains=[];
-  while(result.length<count && pool.length){
-    let idx=pool.findIndex(q=>!usedDomains.includes(q.domain));
-    if(idx<0){ usedDomains=[]; idx=0; }
-    const q=pool.splice(idx,1)[0];
-    if(!weakOnly || masteryFor(q.concept)<80 || conceptState(q.concept).highConfidenceMisses>0) result.push(q);
-    usedDomains.push(q.domain);
-  }
-  if(result.length<count && weakOnly){
-    QUESTION_BANK.filter(q=>!result.includes(q)).sort((a,b)=>priorityScore(b)-priorityScore(a)).slice(0,count-result.length).forEach(q=>result.push(q));
-  }
-  return result;
-}
-function renderDashboard(){
-  $("overall-mastery").textContent=overallMastery()+"%";
-  $("questions-answered").textContent=state.answered;
-  $("due-review").textContent=dueCount();
-  $("high-confidence-misses").textContent=state.highConfidenceMisses;
-  $("streak").textContent=`${state.streak || 0} day${state.streak===1?"":"s"} streak`;
-
-  const weak = QUESTION_BANK.map(q=>q.concept).filter((c,i,a)=>a.indexOf(c)===i)
-    .sort((a,b)=>(conceptState(b).highConfidenceMisses-conceptState(a).highConfidenceMisses)||(masteryFor(a)-masteryFor(b)));
-  const plan=[];
-  if(dueCount()) plan.push(`Start with ${Math.min(dueCount(),3)} spaced-repetition reviews that are due now.`);
-  if(state.highConfidenceMisses) plan.push(`Prioritize ${Math.min(state.highConfidenceMisses,3)} high-confidence miss${state.highConfidenceMisses===1?"":"es"} to correct false certainty.`);
-  plan.push(`Interleave questions across all three AZ-900 domains instead of studying one domain in a block.`);
-  plan.push(`Finish with an explain-it-yourself checkpoint on ${weak[0] || "a key Azure concept"}.`);
-  $("study-plan").innerHTML=plan.map(x=>`<li>${x}</li>`).join("");
-
-  $("domain-mastery").innerHTML=DOMAINS.map(d=>{
-    const m=domainMastery(d.name);
-    return `<div class="domain-row"><div class="domain-row-top"><strong>${d.name}</strong><span>${m}% · ${d.weight}</span></div><div class="meter"><div style="width:${m}%"></div></div></div>`;
-  }).join("");
-
-  const issues=weak.slice(0,5).filter(c=>conceptState(c).attempts || conceptState(c).highConfidenceMisses);
-  $("misconception-list").innerHTML=issues.length ? issues.map(c=>{
-    const cs=conceptState(c);
-    const notes=state.confusions.filter(x=>x.concept===c).slice(-1)[0];
-    return `<div class="misconception-item"><strong>${c}</strong><span class="muted">Mastery ${Math.round(cs.mastery)}%${cs.highConfidenceMisses?` · ${cs.highConfidenceMisses} high-confidence miss${cs.highConfidenceMisses===1?"":"es"}`:""}</span>${notes?`<p class="muted">Your note: ${escapeHtml(notes.note)}</p>`:""}</div>`;
-  }).join("") : `<p class="muted">No misconceptions logged yet. The trainer will surface them as you answer questions.</p>`;
-}
-function startSession(mode="learn", weakOnly=false){
-  updateStreak();
-  const count=mode==="exam" ? Math.min(18,QUESTION_BANK.length) : 10;
-  session={mode, queue: mode==="exam" ? shuffle([...QUESTION_BANK]).slice(0,count) : buildAdaptiveQueue(count,weakOnly), index:0, correct:0, confidence:[], improved:new Set(), reviewScheduled:0, records:[]};
-  selectedAnswer=null; saveState(); renderQuestion(); showView("quiz-view");
-}
-function renderQuestion(){
-  const q=session.queue[session.index];
-  selectedAnswer=null;
-  $("mode-label").textContent=session.mode==="exam"?"Exam mode":"Learn mode";
-  $("session-title").textContent=session.mode==="exam"?"AZ-900 simulation":"Adaptive learning session";
-  $("progress-text").textContent=`${session.index+1} / ${session.queue.length}`;
-  $("session-score").textContent=`${session.correct} correct`;
-  $("progress-bar").style.width=`${(session.index/session.queue.length)*100}%`;
-  $("domain-tag").textContent=q.domain;
-  $("concept-tag").textContent=q.concept;
-  $("question-text").textContent=q.q;
-  $("generation-prompt").textContent=session.mode==="exam"?"Feedback is hidden until the end.":"Commit to an answer first. Then rate your confidence before you see the explanation.";
-  $("feedback-panel").classList.add("hidden");
-  $("confidence-panel").classList.add("hidden");
-  $("confusion-box").classList.add("hidden");
-  $("transfer-box").classList.add("hidden");
-  $("confusion-input").value="";
-  $("save-confusion").textContent="Save misconception";
-  $("save-confusion").disabled=false;
-  $("answers").innerHTML=q.options.map((o,i)=>`<button class="answer-btn" data-index="${i}" type="button">${String.fromCharCode(65+i)}. ${o}</button>`).join("");
-  document.querySelectorAll(".answer-btn").forEach(btn=>btn.addEventListener("click",()=>chooseAnswer(Number(btn.dataset.index))));
-}
-function chooseAnswer(index){
-  if(selectedAnswer!==null) return;
-  selectedAnswer=index;
-  document.querySelectorAll(".answer-btn").forEach((b,i)=>b.classList.toggle("selected",i===index));
-  if(session.mode==="exam"){ recordExamAnswer(index); return; }
-  $("confidence-panel").classList.remove("hidden");
-}
-function recordExamAnswer(index){
-  const q=session.queue[session.index], isCorrect=index===q.answer;
-  session.records.push({q,selected:index,correct:isCorrect,confidence:null});
-  if(isCorrect) session.correct++;
-  setTimeout(nextQuestion,180);
-}
-function applyLearningResult(confidence){
-  const q=session.queue[session.index], isCorrect=selectedAnswer===q.answer, cs=conceptState(q.concept);
-  const oldMastery=cs.mastery||0;
-  cs.attempts++; state.answered++; session.confidence.push(confidence);
-  if(isCorrect){ cs.correct++; state.correct++; session.correct++; }
-  if(!isCorrect && confidence===3){ cs.highConfidenceMisses++; state.highConfidenceMisses++; }
-  let delta=isCorrect ? (confidence===3?16:confidence===2?13:10) : -(confidence===3?18:confidence===2?12:8);
-  cs.mastery=Math.max(0,Math.min(100,(cs.mastery||0)+delta));
-  if(cs.mastery>oldMastery) session.improved.add(q.concept);
-  scheduleReview(cs,isCorrect,confidence);
-  session.reviewScheduled++;
-  session.records.push({q,selected:selectedAnswer,correct:isCorrect,confidence});
-  saveState();
-  showFeedback(q,isCorrect);
-}
-function scheduleReview(cs,isCorrect,confidence){
-  if(!isCorrect) cs.interval=0;
-  else if(cs.interval===0) cs.interval=1;
-  else cs.interval=Math.min(30,Math.max(1,Math.round(cs.interval*(confidence===3?2.5:confidence===2?2:1.4))));
-  const days=isCorrect?cs.interval:0;
-  cs.nextReview=Date.now()+days*86400000;
-}
-function showFeedback(q,isCorrect){
-  $("confidence-panel").classList.add("hidden");
-  const p=$("feedback-panel");
-  p.classList.remove("hidden","success","error"); p.classList.add(isCorrect?"success":"error");
-  $("feedback-title").textContent=isCorrect?"Correct — now lock in the why.":"Not quite — fix the mental model.";
-  $("feedback-text").textContent=q.explanation;
-  document.querySelectorAll(".answer-btn").forEach((b,i)=>{
-    b.disabled=true;
-    if(i===q.answer) b.classList.add("correct");
-    else if(i===selectedAnswer) b.classList.add("incorrect");
-  });
-  $("transfer-text").textContent=q.transfer;
-  $("transfer-box").classList.remove("hidden");
-  if(!isCorrect) $("confusion-box").classList.remove("hidden");
-}
-function saveConfusion(){
-  const q=session.queue[session.index], note=$("confusion-input").value.trim();
-  if(note){
-    state.confusions.push({concept:q.concept,note,date:new Date().toISOString()});
-    saveState();
-    $("save-confusion").textContent="Saved";
-    $("save-confusion").disabled=true;
-  }
-}
-function nextQuestion(){
-  session.index++;
-  if(session.index>=session.queue.length){ maybeFeynman(); return; }
-  renderQuestion();
-}
-function maybeFeynman(){
-  if(session.mode==="exam"){ finishSession(); return; }
-  const weakest=[...session.records].sort((a,b)=>masteryFor(a.q.concept)-masteryFor(b.q.concept))[0];
-  const concept=weakest?.q.concept || session.queue[0].concept;
-  $("feynman-prompt").textContent=`In your own words, explain ${concept}. What problem does it solve, and when would you use it?`;
-  $("feynman-answer").value="";
-  $("feynman-key").classList.add("hidden");
-  $("finish-feynman").classList.add("hidden");
-  $("show-feynman-key").classList.remove("hidden");
-  $("feynman-key").dataset.concept=concept;
-  showView("feynman-view");
-}
-function showFeynmanKey(){
-  const concept=$("feynman-key").dataset.concept;
-  const q=QUESTION_BANK.find(x=>x.concept===concept);
-  $("feynman-key").innerHTML=`<p class="eyebrow">Key idea to compare against</p><p>${q.explanation}</p><p class="muted">Don't grade yourself on exact wording. Ask whether your explanation captured the purpose, the distinguishing feature, and when to use it.</p>`;
-  $("feynman-key").classList.remove("hidden");
-  $("finish-feynman").classList.remove("hidden");
-  $("show-feynman-key").classList.add("hidden");
-}
-function finishSession(){
-  if(session.mode==="exam"){
-    session.records.forEach(r=>{
-      const cs=conceptState(r.q.concept), old=cs.mastery||0;
-      cs.attempts++; state.answered++;
-      if(r.correct){ cs.correct++; state.correct++; cs.mastery=Math.min(100,old+10); }
-      else { cs.mastery=Math.max(0,old-8); }
-      scheduleReview(cs,r.correct,2); session.reviewScheduled++;
-      if(cs.mastery>old) session.improved.add(r.q.concept);
-    });
-    saveState();
-  }
-  const total=session.queue.length, accuracy=Math.round(session.correct/total*100);
-  $("results-heading").textContent=accuracy>=80?"Strong session.":accuracy>=65?"Good base — now target the misses.":"Perfect data for the adaptive engine.";
-  $("results-summary").textContent=session.mode==="exam"
-    ? `You scored ${session.correct}/${total}. The dashboard has scheduled weaker concepts for review.`
-    : `You scored ${session.correct}/${total}. The next session will automatically give more weight to weak, due, and high-confidence-missed concepts.`;
-  $("result-accuracy").textContent=accuracy+"%";
-  $("result-confidence").textContent=session.confidence.length ? ({1:"Guessing",2:"Somewhat sure",3:"Very sure"}[Math.round(session.confidence.reduce((a,b)=>a+b,0)/session.confidence.length)]) : "Exam";
-  $("result-improved").textContent=session.improved.size;
-  $("result-review").textContent=session.reviewScheduled;
-  $("progress-bar").style.width="100%";
-  renderDashboard(); showView("results-view");
-}
-function resetProgress(){
-  if(confirm("Reset all AZ-900 mastery, confidence, confusion, and spaced-repetition history on this browser?")){
-    state=defaultState(); saveState(); renderDashboard(); showView("dashboard-view");
-  }
-}
-function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
-function escapeHtml(s){ return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m])); }
-
-$("start-learn").addEventListener("click",()=>startSession("learn"));
-$("start-exam").addEventListener("click",()=>startSession("exam"));
-$("retry-weak").addEventListener("click",()=>startSession("learn",true));
-$("return-dashboard").addEventListener("click",()=>{renderDashboard();showView("dashboard-view");});
-$("reset-progress").addEventListener("click",resetProgress);
-$("save-confusion").addEventListener("click",saveConfusion);
-$("next-question").addEventListener("click",nextQuestion);
-$("show-feynman-key").addEventListener("click",showFeynmanKey);
-$("finish-feynman").addEventListener("click",finishSession);
-document.querySelectorAll(".confidence-btn").forEach(btn=>btn.addEventListener("click",()=>applyLearningResult(Number(btn.dataset.confidence))));
-
+const STORAGE_KEY="az900AdaptiveTrainerV3",DOMAINS=[{name:C,weight:"25–30%"},{name:A,weight:"35–40%"},{name:G,weight:"30–35%"}];
+const defaultState=()=>({answered:0,correct:0,highConfidenceMisses:0,lastStudyDate:null,streak:0,concepts:{},confusions:[],history:[],examHistory:[]});
+let state=loadState(),session=null,selectedAnswer=null,flashSession=null,timerHandle=null;
+const $=id=>document.getElementById(id),views=["dashboard-view","quiz-view","flashcard-view","feynman-view","results-view"];
+function loadState(){try{return {...defaultState(),...(JSON.parse(localStorage.getItem(STORAGE_KEY))||{})}}catch{return defaultState()}}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function showView(id){views.forEach(v=>$(v).classList.toggle("hidden",v!==id));scrollTo({top:0,behavior:"smooth"})}
+function cs(concept){if(!state.concepts[concept])state.concepts[concept]={attempts:0,correct:0,mastery:0,nextReview:0,interval:0,highConfidenceMisses:0,lastSeen:0};return state.concepts[concept]}
+function uniqueConcepts(){return [...new Set(QUESTION_BANK.map(q=>q.concept))]}
+function mastery(c){return Math.round(cs(c).mastery||0)}
+function overall(){return Math.round(uniqueConcepts().reduce((s,c)=>s+mastery(c),0)/uniqueConcepts().length)}
+function due(c){const x=cs(c);return x.attempts>0&&(!x.nextReview||x.nextReview<=Date.now())}
+function dueCount(){return uniqueConcepts().filter(due).length}
+function domainMastery(d){const a=[...new Set(QUESTION_BANK.filter(q=>q.domain===d).map(q=>q.concept))];return Math.round(a.reduce((s,c)=>s+mastery(c),0)/a.length)}
+function learningState(c){const x=cs(c),m=mastery(c);if(!x.attempts)return"new";if(m>=85&&x.highConfidenceMisses===0&&!due(c))return"mastered";if(due(c)||x.highConfidenceMisses>0)return"review";return"learning"}
+function escapeHtml(s){return String(s||"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]))}
+function updateStreak(){const t=new Date().toISOString().slice(0,10);if(state.lastStudyDate===t)return;const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);state.streak=state.lastStudyDate===yesterday?(state.streak||0)+1:1;state.lastStudyDate=t}
+function readiness(){const m=overall(),unseen=uniqueConcepts().filter(c=>!cs(c).attempts).length;if(unseen>15)return"Building baseline";if(m>=85&&dueCount()<6)return"Exam ready";if(m>=70)return"Nearly ready";if(m>=50)return"Developing";return"Building baseline"}
+function priority(q){const x=cs(q.concept),st=learningState(q.concept);return (100-mastery(q.concept))*2+(x.highConfidenceMisses||0)*55+(st==="review"?45:0)+(st==="new"?28:0)+Math.random()*12}
+function interleave(pool,count){pool=[...pool].sort((a,b)=>priority(b)-priority(a));const out=[];let last=null;while(out.length<count&&pool.length){let i=pool.findIndex(q=>q.domain!==last);if(i<0)i=0;const q=pool.splice(i,1)[0];out.push(q);last=q.domain}return out}
+function adaptiveQueue(count=12,mode="learn"){let pool=[...QUESTION_BANK];if(mode==="review"){const concepts=new Set(uniqueConcepts().filter(c=>due(c)||cs(c).highConfidenceMisses>0||mastery(c)<60));pool=pool.filter(q=>concepts.has(q.concept));if(!pool.length)pool=[...QUESTION_BANK]}if(mode==="weak"){const concepts=new Set(uniqueConcepts().filter(c=>mastery(c)<75||cs(c).highConfidenceMisses>0));pool=pool.filter(q=>concepts.has(q.concept))}return interleave(pool,Math.min(count,pool.length))}
+function examQueue(count=40){const targets={[C]:11,[A]:15,[G]:14},out=[];for(const [d,n] of Object.entries(targets)){const p=QUESTION_BANK.filter(q=>q.domain===d).sort(()=>Math.random()-.5);out.push(...p.slice(0,n))}return out.sort(()=>Math.random()-.5).slice(0,count)}
+function renderDashboard(){const states={new:0,learning:0,review:0,mastered:0};uniqueConcepts().forEach(c=>states[learningState(c)]++);$("overall-mastery").textContent=overall()+"%";$("questions-answered").textContent=state.answered;$("due-review").textContent=dueCount();$("high-confidence-misses").textContent=state.highConfidenceMisses;$("streak").textContent=`${state.streak||0} day${state.streak===1?"":"s"} streak`;$("readiness-label").textContent=readiness();$("state-summary").innerHTML=[["new","New"],["learning","Learning"],["review","Review"],["mastered","Mastered"]].map(([k,l])=>`<div class="state-card state-${k}"><span class="muted">${l}</span><strong>${states[k]}</strong></div>`).join("");const weak=uniqueConcepts().sort((a,b)=>(cs(b).highConfidenceMisses-cs(a).highConfidenceMisses)||(mastery(a)-mastery(b)));const plan=[];if(dueCount())plan.push(`Clear ${Math.min(dueCount(),5)} due spaced-repetition concept${dueCount()===1?"":"s"}.`);if(state.highConfidenceMisses)plan.push("Repair high-confidence misses before adding too much new material.");plan.push("Interleave all three exam domains to force retrieval instead of pattern matching.");plan.push(`Finish by explaining ${weak[0]||"one Azure concept"} in your own words.`);$("study-plan").innerHTML=plan.map(x=>`<li>${x}</li>`).join("");$("domain-mastery").innerHTML=DOMAINS.map(d=>{const m=domainMastery(d.name);return`<div class="domain-row"><div class="domain-row-top"><strong>${d.name}</strong><span>${m}% · ${d.weight}</span></div><div class="meter"><div style="width:${m}%"></div></div></div>`}).join("");const issues=weak.filter(c=>cs(c).attempts||cs(c).highConfidenceMisses).slice(0,6);$("misconception-list").innerHTML=issues.length?issues.map(c=>{const x=cs(c),note=state.confusions.filter(n=>n.concept===c).at(-1);return`<div class="misconception-item"><strong>${c}</strong><span class="muted">${learningState(c)} · mastery ${mastery(c)}%${x.highConfidenceMisses?` · ${x.highConfidenceMisses} confident miss${x.highConfidenceMisses===1?"":"es"}`:""}</span>${note?`<p class="muted">Your note: ${escapeHtml(note.note)}</p>`:""}</div>`}).join(""):"<p class='muted'>No misconception data yet. Start Learn Mode to build your baseline.</p>";saveState()}
+function startSession(mode="learn"){clearInterval(timerHandle);updateStreak();const isExam=mode==="exam",questions=isExam?examQueue(40):adaptiveQueue(mode==="review"?Math.max(8,Math.min(16,dueCount()*2)):12,mode);session={mode,questions,index:0,correct:0,confSum:0,confCount:0,improved:new Set(),scheduled:0,answers:[],timeLeft:isExam?2700:0};selectedAnswer=null;$("mode-label").textContent=isExam?"Exam mode":mode==="review"?"Review mode":"Learn mode";$("session-title").textContent=isExam?"40-question exam simulation":mode==="review"?"Spaced-repetition review":"Adaptive learning session";$("timer-pill").classList.toggle("hidden",!isExam);if(isExam){updateTimer();timerHandle=setInterval(()=>{session.timeLeft--;updateTimer();if(session.timeLeft<=0){clearInterval(timerHandle);finishSession()}},1000)}showView("quiz-view");renderQuestion()}
+function updateTimer(){if(!session)return;const m=String(Math.floor(session.timeLeft/60)).padStart(2,"0"),s=String(session.timeLeft%60).padStart(2,"0");$("timer-pill").textContent=`${m}:${s}`}
+function renderQuestion(){const q=session.questions[session.index];selectedAnswer=null;$("progress-text").textContent=`${session.index+1} / ${session.questions.length}`;$("session-score").textContent=`${session.correct} correct`;$("progress-bar").style.width=`${(session.index/session.questions.length)*100}%`;$("domain-tag").textContent=q.domain;$("concept-tag").textContent=q.concept;$("question-text").textContent=q.q;$("generation-prompt").textContent=session.mode==="exam"?"Choose the best answer. Feedback is hidden until the end.":"Commit to an answer before seeing feedback.";$("answers").innerHTML=q.options.map((o,i)=>`<button class="answer-btn" data-index="${i}">${String.fromCharCode(65+i)}. ${escapeHtml(o)}</button>`).join("");$("confidence-panel").classList.add("hidden");$("feedback-panel").classList.add("hidden");$("confusion-box").classList.add("hidden");$("transfer-box").classList.add("hidden");$("confusion-input").value="";document.querySelectorAll(".answer-btn").forEach(b=>b.onclick=()=>selectAnswer(+b.dataset.index))}
+function selectAnswer(i){if(selectedAnswer!==null)return;selectedAnswer=i;document.querySelectorAll(".answer-btn").forEach((b,j)=>b.classList.toggle("selected",j===i));if(session.mode==="exam"){commitAnswer(2)}else $("confidence-panel").classList.remove("hidden")}
+function commitAnswer(conf){const q=session.questions[session.index],correct=selectedAnswer===q.answer,before=mastery(q.concept),x=cs(q.concept);session.confSum+=conf;session.confCount++;if(correct)session.correct++;session.answers.push({id:q.id,answer:selectedAnswer,correct,confidence:conf});state.answered++;if(correct)state.correct++;x.attempts++;if(correct)x.correct++;x.lastSeen=Date.now();let delta=correct?(conf===3?12:conf===2?10:8):-(conf===3?18:conf===2?12:8);x.mastery=Math.max(0,Math.min(100,(x.mastery||0)+delta));if(!correct&&conf===3){x.highConfidenceMisses=(x.highConfidenceMisses||0)+1;state.highConfidenceMisses++}if(correct&&x.highConfidenceMisses&&x.mastery>=70)x.highConfidenceMisses=Math.max(0,x.highConfidenceMisses-1);scheduleReview(x,correct,conf);if(mastery(q.concept)>before)session.improved.add(q.concept);session.scheduled++;state.history.push({date:Date.now(),id:q.id,concept:q.concept,correct,confidence:conf});if(state.history.length>500)state.history=state.history.slice(-500);saveState();if(session.mode==="exam"){session.index++;if(session.index>=session.questions.length)finishSession();else renderQuestion();return}document.querySelectorAll(".answer-btn").forEach((b,j)=>{b.disabled=true;if(j===q.answer)b.classList.add("correct");else if(j===selectedAnswer)b.classList.add("incorrect")});$("confidence-panel").classList.add("hidden");const fp=$("feedback-panel");fp.className=`feedback-panel ${correct?"success":"error"}`;$("feedback-title").textContent=correct?"Correct — now strengthen the connection.":conf===3?"Confidently wrong — priority misconception.":"Not yet — repair the mental model.";$("feedback-text").textContent=q.explanation;$("transfer-text").textContent=q.transfer;$("transfer-box").classList.remove("hidden");$("confusion-box").classList.toggle("hidden",correct);fp.classList.remove("hidden")}
+function scheduleReview(x,correct,conf){const day=86400000;if(!correct){x.interval=conf===3?0.25:0.5}else{x.interval=!x.interval?1:Math.min(30,x.interval*(conf===3?2.5:conf===2?2:1.5))}x.nextReview=Date.now()+x.interval*day}
+document.querySelectorAll(".confidence-btn").forEach(b=>b.onclick=()=>commitAnswer(+b.dataset.confidence));
+$("save-confusion").onclick=()=>{const note=$("confusion-input").value.trim();if(!note)return;const q=session.questions[session.index];state.confusions.push({date:Date.now(),concept:q.concept,note});saveState();$("save-confusion").textContent="Saved"};
+$("next-question").onclick=()=>{session.index++;if(session.index>=session.questions.length){if(session.mode!=="exam"&&session.questions.length>=8)showFeynman();else finishSession()}else renderQuestion()};
+function showFeynman(){const weakest=[...session.questions].sort((a,b)=>mastery(a.concept)-mastery(b.concept))[0];session.feynman=weakest;$("feynman-prompt").textContent=`Explain ${weakest.concept}: what it is, when you would use it, and one thing it is commonly confused with.`;$("feynman-answer").value="";$("feynman-key").classList.add("hidden");$("finish-feynman").classList.add("hidden");showView("feynman-view")}
+$("show-feynman-key").onclick=()=>{const q=session.feynman;$("feynman-key").innerHTML=`<h4>Key idea</h4><p>${escapeHtml(q.explanation)}</p><p><strong>Transfer prompt:</strong> ${escapeHtml(q.transfer)}</p><p class="muted">Compare your explanation for accuracy and simplicity. The act of generating it before seeing this is the important part.</p>`;$("feynman-key").classList.remove("hidden");$("finish-feynman").classList.remove("hidden")};$("finish-feynman").onclick=finishSession;
+function finishSession(){clearInterval(timerHandle);if(!session)return;const pct=Math.round(session.correct/session.questions.length*100),avg=session.confCount?(session.confSum/session.confCount).toFixed(1):"—";if(session.mode==="exam")state.examHistory.push({date:Date.now(),score:pct,count:session.questions.length});saveState();$("results-heading").textContent=session.mode==="exam"?(pct>=70?"Strong exam run.":"Good diagnostic run."):pct>=80?"Strong session.":pct>=60?"Progress made.":"We found the weak spots.";$("results-summary").textContent=session.mode==="exam"?`You scored ${pct}%. Use the dashboard and Review Mode to attack the concepts behind your misses.`:`You answered ${session.correct} of ${session.questions.length} correctly. The scheduler has already adjusted what comes back next.`;$("result-accuracy").textContent=pct+"%";$("result-confidence").textContent=avg==="—"?avg:`${avg}/3`;$("result-improved").textContent=session.improved.size;$("result-review").textContent=session.scheduled;showView("results-view")}
+function startFlashcards(){updateStreak();const cards=interleave([...QUESTION_BANK],Math.min(20,QUESTION_BANK.length));flashSession={cards,index:0};showView("flashcard-view");renderFlash()}
+function renderFlash(){if(flashSession.index>=flashSession.cards.length){renderDashboard();showView("dashboard-view");return}const q=flashSession.cards[flashSession.index];$("flash-progress").textContent=`${flashSession.index+1} / ${flashSession.cards.length}`;$("flash-domain").textContent=`${q.domain} · ${q.concept}`;$("flash-front").textContent=q.q;$("flash-back").innerHTML=`<strong>${escapeHtml(q.options[q.answer])}</strong><p>${escapeHtml(q.explanation)}</p>`;$("flash-back").classList.add("hidden");$("reveal-flash").classList.remove("hidden");document.querySelectorAll(".flash-grade").forEach(b=>b.classList.add("hidden"))}
+$("reveal-flash").onclick=()=>{$("flash-back").classList.remove("hidden");$("reveal-flash").classList.add("hidden");document.querySelectorAll(".flash-grade").forEach(b=>b.classList.remove("hidden"))};document.querySelectorAll(".flash-grade").forEach(b=>b.onclick=()=>{const q=flashSession.cards[flashSession.index],x=cs(q.concept),grade=b.dataset.grade,days={again:.1,hard:1,good:3,easy:7}[grade];x.attempts=Math.max(1,x.attempts);x.mastery=Math.max(0,Math.min(100,(x.mastery||0)+({again:-8,hard:2,good:6,easy:10}[grade])));x.interval=days;x.nextReview=Date.now()+days*86400000;x.lastSeen=Date.now();saveState();flashSession.index++;renderFlash()});
+$("start-learn").onclick=()=>startSession("learn");$("start-review").onclick=()=>startSession("review");$("start-exam").onclick=()=>startSession("exam");$("start-flashcards").onclick=startFlashcards;$("return-dashboard").onclick=()=>{renderDashboard();showView("dashboard-view")};$("retry-weak").onclick=()=>startSession("weak");$("reset-progress").onclick=()=>{if(confirm("Reset all mastery, history, streaks and misconception notes?")){localStorage.removeItem(STORAGE_KEY);state=defaultState();renderDashboard()}};
 renderDashboard();
