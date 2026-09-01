@@ -1,29 +1,179 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Adaptive AZ-900 Microsoft Azure Fundamentals study trainer">
-  <link rel="stylesheet" href="./assets/styles.css"><title>AZ-900 Adaptive Trainer</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Gamified adaptive AZ-900 Microsoft Azure Fundamentals study trainer">
+  <title>AZ-900 Quest</title>
+  <link rel="stylesheet" href="./assets/styles.css">
 </head>
 <body>
-<header class="topbar"><div><p class="eyebrow">Microsoft Azure Fundamentals</p><h1>AZ-900 Adaptive Trainer</h1></div><div class="topbar-actions"><span id="streak" class="pill">0 day streak</span><button id="reset-progress" class="ghost-btn">Reset progress</button></div></header>
+<header class="topbar">
+  <div>
+    <p class="eyebrow">Microsoft Azure Fundamentals</p>
+    <h1>AZ-900 Quest</h1>
+  </div>
+  <div class="topbar-actions">
+    <span id="level-pill" class="pill">Lv 1</span>
+    <span id="xp-pill" class="pill">0 XP</span>
+    <span id="streak" class="pill">0 day streak</span>
+    <button id="reset-progress" class="ghost-btn">Reset</button>
+  </div>
+</header>
+
 <main class="app-shell">
 <section id="dashboard-view" class="view">
-  <div class="hero-card"><div><p class="eyebrow">Adaptive learning engine</p><h2>Learn Azure. Prove you know it.</h2><p class="muted">Active recall, confidence scoring, misconception repair, interleaving, spaced repetition, transfer practice and exam simulation.</p></div><div class="hero-actions"><button id="start-learn" class="primary-btn">Learn Mode</button><button id="start-review" class="secondary-btn">Review Due</button><button id="start-flashcards" class="secondary-btn">Flashcards</button><button id="start-exam" class="secondary-btn">Exam Mode</button></div></div>
-  <section class="stats-grid"><article class="stat-card"><span>Overall mastery</span><strong id="overall-mastery">0%</strong><small>Across blueprint concepts</small></article><article class="stat-card"><span>Questions answered</span><strong id="questions-answered">0</strong><small>Total attempts</small></article><article class="stat-card"><span>Due for review</span><strong id="due-review">0</strong><small>Spaced repetition</small></article><article class="stat-card danger-soft"><span>Confident misses</span><strong id="high-confidence-misses">0</strong><small>Misconceptions first</small></article></section>
-  <section class="panel"><div class="section-heading"><div><p class="eyebrow">Today's plan</p><h3>Your adaptive session</h3></div><span id="recommended-count" class="pill">12 questions</span></div><ol id="study-plan" class="study-plan"></ol></section>
-  <section class="panel"><div class="section-heading"><div><p class="eyebrow">Exam readiness</p><h3>Domain mastery</h3></div><span id="readiness-label" class="pill">Building baseline</span></div><div id="domain-mastery" class="domain-list"></div></section>
-  <section class="panel"><div class="section-heading"><div><p class="eyebrow">Mastery states</p><h3>What the engine thinks you know</h3></div></div><div id="state-summary" class="state-grid"></div></section>
-  <section class="panel"><div class="section-heading"><div><p class="eyebrow">Misconception radar</p><h3>Concepts to attack next</h3></div></div><div id="misconception-list" class="misconception-list"></div></section>
+  <div class="hero-card">
+    <div>
+      <p class="eyebrow">Adaptive learning disguised as a game</p>
+      <h2>Train harder than the exam.</h2>
+      <p class="muted">XP rewards retrieval, spaced review, misconception repair, transfer, and mastery — not mindless clicking.</p>
+      <div class="xp-track"><div id="xp-bar" class="xp-bar"></div></div>
+      <p id="rank-text" class="tiny muted"></p>
+    </div>
+    <div class="hero-actions">
+      <button id="start-learn" class="primary-btn">Learn</button>
+      <button id="start-review" class="secondary-btn">Review Due</button>
+      <button id="start-flashcards" class="secondary-btn">Flashcards</button>
+      <button id="start-exam" class="secondary-btn">Exam Simulation</button>
+      <button id="start-gauntlet" class="danger-btn">Gauntlet</button>
+    </div>
+  </div>
+
+  <section class="stats-grid">
+    <article class="stat-card"><span>Effective mastery</span><strong id="overall-mastery">0%</strong><small>Includes knowledge decay</small></article>
+    <article class="stat-card"><span>Exam readiness</span><strong id="readiness">0%</strong><small>Weighted + confidence adjusted</small></article>
+    <article class="stat-card"><span>Due reviews</span><strong id="due-review">0</strong><small>Spaced repetition queue</small></article>
+    <article class="stat-card danger-soft"><span>Confident misses</span><strong id="high-confidence-misses">0</strong><small>False certainty gets priority</small></article>
+    <article class="stat-card"><span>Focus shield</span><strong id="focus-shield">100%</strong><small>Recover by repairing errors</small></article>
+    <article class="stat-card"><span>Streak shields</span><strong id="streak-shields">0</strong><small>Earned through consistency</small></article>
+  </section>
+
+  <section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">Daily quests</p><h3>Today's missions</h3></div><span id="quest-bonus" class="pill">+150 XP bonus</span></div>
+    <div id="daily-quests" class="quest-grid"></div>
+  </section>
+
+  <section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">World map</p><h3>Azure learning path</h3></div><span class="pill">Bosses unlock with mastery</span></div>
+    <div id="world-map" class="world-map"></div>
+  </section>
+
+  <section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">Today's adaptive plan</p><h3>What to attack next</h3></div><span id="recommended-count" class="pill">12 questions</span></div>
+    <ol id="study-plan" class="study-plan"></ol>
+  </section>
+
+  <section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">Current blueprint</p><h3>Domain mastery</h3></div></div>
+    <div id="domain-mastery" class="domain-list"></div>
+  </section>
+
+  <section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">Knowledge health</p><h3>New → Learning → Reviewing → Mastered</h3></div></div>
+    <div id="state-summary" class="state-grid"></div>
+  </section>
+
+  <section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">Misconception radar</p><h3>False mental models</h3></div></div>
+    <div id="misconception-list" class="misconception-list"></div>
+  </section>
+
+  <section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">Achievements</p><h3>Trophy case</h3></div></div>
+    <div id="achievements" class="achievement-grid"></div>
+  </section>
 </section>
 
-<section id="quiz-view" class="view hidden"><div class="quiz-header"><div><p id="mode-label" class="eyebrow">Learn mode</p><h2 id="session-title">Adaptive session</h2></div><div class="quiz-meta"><span id="timer-pill" class="pill hidden">45:00</span><span id="progress-text" class="pill">1 / 12</span><span id="session-score" class="pill">0 correct</span></div></div><div class="progress-track"><div id="progress-bar" class="progress-bar"></div></div><article class="question-card"><div class="question-meta"><span id="domain-tag" class="domain-tag"></span><span id="concept-tag" class="concept-tag"></span></div><h3 id="question-text"></h3><p id="generation-prompt" class="muted">Commit to an answer before seeing feedback.</p><div id="answers" class="answers"></div><div id="confidence-panel" class="confidence-panel hidden"><p><strong>How confident were you?</strong></p><div class="confidence-buttons"><button data-confidence="1" class="confidence-btn">Guessing</button><button data-confidence="2" class="confidence-btn">Somewhat sure</button><button data-confidence="3" class="confidence-btn">Very sure</button></div></div><div id="feedback-panel" class="feedback-panel hidden"><h4 id="feedback-title"></h4><p id="feedback-text"></p><div id="confusion-box" class="confusion-box hidden"><label for="confusion-input"><strong>What made your answer seem right?</strong></label><textarea id="confusion-input" rows="3" placeholder="Write the mental model that led you there..."></textarea><button id="save-confusion" class="secondary-btn">Save misconception</button></div><div id="transfer-box" class="transfer-box hidden"><p class="eyebrow">Transfer check</p><p id="transfer-text"></p></div><button id="next-question" class="primary-btn">Next question</button></div></article></section>
+<section id="quiz-view" class="view hidden">
+  <div class="quiz-header">
+    <div><p id="mode-label" class="eyebrow">Learn</p><h2 id="session-title">Adaptive session</h2></div>
+    <div class="quiz-meta">
+      <span id="timer-pill" class="pill hidden">45:00</span>
+      <span id="shield-pill" class="pill">Shield 100%</span>
+      <span id="progress-text" class="pill">1 / 12</span>
+      <span id="session-score" class="pill">0 correct</span>
+    </div>
+  </div>
+  <div class="progress-track"><div id="progress-bar" class="progress-bar"></div></div>
+  <article class="question-card">
+    <div class="question-meta">
+      <span id="difficulty-tag" class="difficulty-tag"></span>
+      <span id="domain-tag" class="domain-tag"></span>
+      <span id="concept-tag" class="concept-tag"></span>
+    </div>
+    <h3 id="question-text"></h3>
+    <p id="generation-prompt" class="muted">Commit to an answer before seeing feedback.</p>
+    <div id="answers" class="answers"></div>
+    <div id="confidence-panel" class="confidence-panel hidden">
+      <p><strong>Lock your confidence before feedback.</strong></p>
+      <div class="confidence-buttons">
+        <button data-confidence="1" class="confidence-btn">Guessing</button>
+        <button data-confidence="2" class="confidence-btn">Somewhat sure</button>
+        <button data-confidence="3" class="confidence-btn">Very sure</button>
+      </div>
+    </div>
+    <div id="feedback-panel" class="feedback-panel hidden">
+      <div id="xp-earned" class="xp-earned"></div>
+      <h4 id="feedback-title"></h4>
+      <p id="feedback-text"></p>
+      <div id="confusion-box" class="confusion-box hidden">
+        <label for="confusion-input"><strong>What made your answer seem right?</strong></label>
+        <textarea id="confusion-input" rows="3" placeholder="Write the mental model that led you there..."></textarea>
+        <button id="save-confusion" class="secondary-btn">Repair misconception + XP</button>
+      </div>
+      <div id="transfer-box" class="transfer-box hidden"><p class="eyebrow">Transfer check</p><p id="transfer-text"></p></div>
+      <button id="next-question" class="primary-btn">Next</button>
+    </div>
+  </article>
+</section>
 
-<section id="flashcard-view" class="view hidden"><div class="quiz-header"><div><p class="eyebrow">Flashcards</p><h2>Rapid retrieval</h2></div><span id="flash-progress" class="pill">1 / 20</span></div><article class="question-card flash-card"><p id="flash-domain" class="eyebrow"></p><h3 id="flash-front"></h3><div id="flash-back" class="flash-back hidden"></div><div class="hero-actions"><button id="reveal-flash" class="primary-btn">Reveal answer</button><button data-grade="again" class="flash-grade secondary-btn hidden">Again</button><button data-grade="hard" class="flash-grade secondary-btn hidden">Hard</button><button data-grade="good" class="flash-grade secondary-btn hidden">Good</button><button data-grade="easy" class="flash-grade secondary-btn hidden">Easy</button></div></article></section>
+<section id="flashcard-view" class="view hidden">
+  <article class="question-card">
+    <div class="quiz-header"><div><p class="eyebrow">Spaced repetition</p><h2>Flashcard review</h2></div><span id="flash-progress" class="pill"></span></div>
+    <p id="flash-concept" class="eyebrow"></p>
+    <h3 id="flash-front"></h3>
+    <button id="reveal-card" class="primary-btn">Reveal answer</button>
+    <div id="flash-back" class="feedback-panel hidden"></div>
+    <div id="flash-ratings" class="confidence-buttons hidden">
+      <button data-rating="again" class="confidence-btn">Again</button>
+      <button data-rating="hard" class="confidence-btn">Hard</button>
+      <button data-rating="good" class="confidence-btn">Good</button>
+      <button data-rating="easy" class="confidence-btn">Easy</button>
+    </div>
+  </article>
+</section>
 
-<section id="feynman-view" class="view hidden"><article class="question-card"><p class="eyebrow">Feynman checkpoint</p><h2>Explain it like you're teaching a new IT tech.</h2><h3 id="feynman-prompt"></h3><textarea id="feynman-answer" rows="7" placeholder="Explain it in plain English without memorized wording."></textarea><div class="feynman-actions"><button id="show-feynman-key" class="secondary-btn">Compare with key points</button><button id="finish-feynman" class="primary-btn hidden">Continue</button></div><div id="feynman-key" class="feedback-panel hidden"></div></article></section>
+<section id="feynman-view" class="view hidden">
+  <article class="question-card">
+    <p class="eyebrow">Teach-back challenge</p>
+    <h2>Explain it like you're onboarding a new IT tech.</h2>
+    <h3 id="feynman-prompt"></h3>
+    <textarea id="feynman-answer" rows="7" placeholder="No memorized definition. Explain why it works and when you'd use it."></textarea>
+    <div class="feynman-actions">
+      <button id="show-feynman-key" class="secondary-btn">Compare with key points</button>
+      <button id="finish-feynman" class="primary-btn hidden">Claim XP & continue</button>
+    </div>
+    <div id="feynman-key" class="feedback-panel hidden"></div>
+  </article>
+</section>
 
-<section id="results-view" class="view hidden"><article class="hero-card results-card"><div><p class="eyebrow">Session complete</p><h2 id="results-heading">Session complete.</h2><p id="results-summary" class="muted"></p></div><div class="hero-actions"><button id="return-dashboard" class="primary-btn">Dashboard</button><button id="retry-weak" class="secondary-btn">Drill weak concepts</button></div></article><section class="stats-grid"><article class="stat-card"><span>Accuracy</span><strong id="result-accuracy">0%</strong></article><article class="stat-card"><span>Avg confidence</span><strong id="result-confidence">—</strong></article><article class="stat-card"><span>Concepts improved</span><strong id="result-improved">0</strong></article><article class="stat-card"><span>Review scheduled</span><strong id="result-review">0</strong></article></section></section>
+<section id="results-view" class="view hidden">
+  <article class="hero-card results-card">
+    <div><p class="eyebrow">Session complete</p><h2 id="results-heading"></h2><p id="results-summary" class="muted"></p></div>
+    <div class="hero-actions"><button id="return-dashboard" class="primary-btn">Dashboard</button><button id="retry-weak" class="secondary-btn">Drill weak concepts</button></div>
+  </article>
+  <section class="stats-grid">
+    <article class="stat-card"><span>Accuracy</span><strong id="result-accuracy">0%</strong></article>
+    <article class="stat-card"><span>XP earned</span><strong id="result-xp">0</strong></article>
+    <article class="stat-card"><span>Focus shield</span><strong id="result-shield">100%</strong></article>
+    <article class="stat-card"><span>Reviews scheduled</span><strong id="result-review">0</strong></article>
+  </section>
+</section>
 </main>
-<footer><p>AZ-900 trainer aligned to the July 20, 2026 skills outline. Progress stays in this browser.</p></footer><script src="./assets/scripts.js"></script>
-</body></html>
+
+<div id="toast" class="toast hidden"></div>
+<footer><p>Gamification rewards real learning behaviors. Progress is stored locally in your browser.</p></footer>
+<script src="./assets/scripts.js"></script>
+</body>
+</html>
