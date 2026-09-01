@@ -1,30 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./assets/styles.css" />
-    <title>Code Quiz Challenge</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Adaptive AZ-900 Microsoft Azure Fundamentals study trainer" />
+  <link rel="stylesheet" href="./assets/styles.css" />
+  <title>AZ-900 Adaptive Trainer</title>
 </head>
 <body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Microsoft Azure Fundamentals</p>
+      <h1>AZ-900 Adaptive Trainer</h1>
+    </div>
+    <div class="topbar-actions">
+      <span id="streak" class="pill">0 day streak</span>
+      <button id="reset-progress" class="ghost-btn" type="button">Reset progress</button>
+    </div>
+  </header>
 
-    <header>
-        <button class="see-scores" id="see-scores">See-Score</button>
-        <!--Timer-->
-        <div id="timer">Time:0</div>
-    </header>
-
-    <main>
-        <div class="opening-box">
-            <h1 class="opening-text">Code Quiz Challenge</h1>
-            <p class="message"> Answer code related questions within time limit. <br>
-            Also keep in mind incorrect answers will deduct time!</p>
-            <button class="btn" idk="begin-button">Begin</button>
+  <main id="app" class="app-shell">
+    <section id="dashboard-view" class="view">
+      <div class="hero-card">
+        <div>
+          <p class="eyebrow">Adaptive study engine</p>
+          <h2>Learn the concept, not the answer.</h2>
+          <p class="muted">Active recall, confidence scoring, error-driven feedback, confusion tracking, interleaving, and spaced repetition are built into every session.</p>
         </div>
-    </main>
+        <div class="hero-actions">
+          <button id="start-learn" class="primary-btn" type="button">Start Learn Mode</button>
+          <button id="start-exam" class="secondary-btn" type="button">Start Exam Mode</button>
+        </div>
+      </div>
 
-    <script src="./assets/scripts.js"></script>
-    
+      <section class="stats-grid">
+        <article class="stat-card"><span>Overall mastery</span><strong id="overall-mastery">0%</strong><small>Based on concept performance</small></article>
+        <article class="stat-card"><span>Questions answered</span><strong id="questions-answered">0</strong><small>Across all sessions</small></article>
+        <article class="stat-card"><span>Due for review</span><strong id="due-review">0</strong><small>Spaced-repetition queue</small></article>
+        <article class="stat-card danger-soft"><span>High-confidence misses</span><strong id="high-confidence-misses">0</strong><small>Priority misconceptions</small></article>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Today's adaptive plan</p>
+            <h3 id="plan-title">Your next session</h3>
+          </div>
+          <span class="pill" id="recommended-count">10 questions</span>
+        </div>
+        <ol id="study-plan" class="study-plan"></ol>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Current AZ-900 blueprint</p>
+            <h3>Domain mastery</h3>
+          </div>
+        </div>
+        <div id="domain-mastery" class="domain-list"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Misconception radar</p>
+            <h3>Concepts to attack next</h3>
+          </div>
+        </div>
+        <div id="misconception-list" class="misconception-list"></div>
+      </section>
+    </section>
+
+    <section id="quiz-view" class="view hidden">
+      <div class="quiz-header">
+        <div>
+          <p id="mode-label" class="eyebrow">Learn mode</p>
+          <h2 id="session-title">Adaptive session</h2>
+        </div>
+        <div class="quiz-meta">
+          <span id="progress-text" class="pill">1 / 10</span>
+          <span id="session-score" class="pill">0 correct</span>
+        </div>
+      </div>
+
+      <div class="progress-track"><div id="progress-bar" class="progress-bar"></div></div>
+
+      <article class="question-card">
+        <div class="question-meta">
+          <span id="domain-tag" class="domain-tag"></span>
+          <span id="concept-tag" class="concept-tag"></span>
+        </div>
+        <h3 id="question-text"></h3>
+        <p id="generation-prompt" class="muted">Commit to an answer before revealing any explanation.</p>
+        <div id="answers" class="answers"></div>
+
+        <div id="confidence-panel" class="confidence-panel hidden">
+          <p><strong>Before feedback:</strong> how confident were you?</p>
+          <div class="confidence-buttons">
+            <button data-confidence="1" class="confidence-btn" type="button">Guessing</button>
+            <button data-confidence="2" class="confidence-btn" type="button">Somewhat sure</button>
+            <button data-confidence="3" class="confidence-btn" type="button">Very sure</button>
+          </div>
+        </div>
+
+        <div id="feedback-panel" class="feedback-panel hidden">
+          <h4 id="feedback-title"></h4>
+          <p id="feedback-text"></p>
+          <div id="confusion-box" class="confusion-box hidden">
+            <label for="confusion-input"><strong>What made your answer seem right?</strong></label>
+            <textarea id="confusion-input" rows="3" placeholder="Example: I thought VPN Gateway didn't use the public internet..."></textarea>
+            <button id="save-confusion" class="secondary-btn" type="button">Save misconception</button>
+          </div>
+          <div id="transfer-box" class="transfer-box hidden">
+            <p class="eyebrow">Transfer check</p>
+            <p id="transfer-text"></p>
+          </div>
+          <button id="next-question" class="primary-btn" type="button">Next question</button>
+        </div>
+      </article>
+    </section>
+
+    <section id="feynman-view" class="view hidden">
+      <article class="question-card">
+        <p class="eyebrow">Feynman checkpoint</p>
+        <h2>Explain it like you're teaching a new IT tech.</h2>
+        <h3 id="feynman-prompt"></h3>
+        <textarea id="feynman-answer" rows="7" placeholder="Explain the idea in plain English. Avoid memorized wording."></textarea>
+        <div class="feynman-actions">
+          <button id="show-feynman-key" class="secondary-btn" type="button">Compare with key points</button>
+          <button id="finish-feynman" class="primary-btn hidden" type="button">Continue</button>
+        </div>
+        <div id="feynman-key" class="feedback-panel hidden"></div>
+      </article>
+    </section>
+
+    <section id="results-view" class="view hidden">
+      <article class="hero-card results-card">
+        <div>
+          <p class="eyebrow">Session complete</p>
+          <h2 id="results-heading">Nice work.</h2>
+          <p id="results-summary" class="muted"></p>
+        </div>
+        <div class="hero-actions">
+          <button id="return-dashboard" class="primary-btn" type="button">Back to dashboard</button>
+          <button id="retry-weak" class="secondary-btn" type="button">Drill weak concepts</button>
+        </div>
+      </article>
+      <section class="stats-grid">
+        <article class="stat-card"><span>Accuracy</span><strong id="result-accuracy">0%</strong></article>
+        <article class="stat-card"><span>Avg confidence</span><strong id="result-confidence">—</strong></article>
+        <article class="stat-card"><span>Concepts improved</span><strong id="result-improved">0</strong></article>
+        <article class="stat-card"><span>Review scheduled</span><strong id="result-review">0</strong></article>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <p>Built for AZ-900 practice. Progress is stored locally in your browser.</p>
+  </footer>
+  <script src="./assets/scripts.js"></script>
 </body>
 </html>
