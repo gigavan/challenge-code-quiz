@@ -1,19 +1,33 @@
-# challenge-code-quiz
+# AZ-900 Adaptive Trainer
 
-REDO
+A browser-based adaptive learning app for **Microsoft Azure Fundamentals (AZ-900)**.
 
-Challenge 4: Web APIs Challenge: Code Quiz
+## Learning methods built in
 
-In this Challenge we created a quiz, with multiple choice questions, main foundation was HTML, styles with CSS.
-we used Javascripts and Web APIs to make it function and work.
+- Active recall and generation effect: commit to an answer before seeing feedback
+- Confidence scoring on every Learn Mode question
+- High-confidence wrong-answer tracking to identify false certainty
+- Error-driven explanations and misconception notes
+- Scenario-transfer prompts after feedback
+- Spaced-repetition scheduling stored in the browser
+- Interleaving across the three current AZ-900 skill domains
+- Feynman-style explain-it-yourself checkpoints
+- Adaptive weak-concept selection
+- Learn Mode and Exam Mode
+- Mastery, review, and misconception dashboard
 
-wrong questions will deduct time, once all the questions are answered timer reaches 0.
+## Current AZ-900 domains
 
-<<<<<<< HEAD
+- Describe cloud concepts
+- Describe Azure architecture and services
+- Describe Azure management and governance
 
-=======
-<img src="https://user-images.githubusercontent.com/70541230/177843655-3fbb51d0-ffdc-41af-aa70-28f4f9446185.png" width="15%"></img> 
+The question bank and dashboard weighting are structured around the current Microsoft AZ-900 study blueprint.
 
+## Run
+
+Open `index.html` locally or use GitHub Pages:
 
 https://gigavan.github.io/challenge-code-quiz/
->>>>>>> c117d25e226d5c1ae1edfbe251278ef5c2b24712
+
+Progress is stored locally with `localStorage`, so no backend is required for this version.
