@@ -1,126 +1,235 @@
-const Q=(id,domain,concept,q,options,answer,explanation,transfer)=>({id,domain,concept,q,options,answer,explanation,transfer});
-const C="Cloud concepts",A="Azure architecture and services",G="Azure management and governance";
-const QUESTION_BANK=[
-Q("c01",C,"Cloud computing","Which statement best defines cloud computing?",["Delivery of computing services over the internet","Buying only physical servers","Running software without networking","Using only private datacenters"],0,"Cloud computing delivers services such as compute, storage, databases and networking over the internet on demand.","Why does on-demand provisioning change how quickly an organization can launch a project?"),
-Q("c02",C,"Shared responsibility","For an Azure IaaS virtual machine, who normally patches the guest operating system?",["Microsoft","The customer","The ISP","The hardware vendor"],1,"With IaaS, Microsoft manages the physical infrastructure while the customer manages the guest OS, apps, data and configuration.","How would that responsibility change for a SaaS application?"),
-Q("c03",C,"Cloud models","Which model uses provider-owned infrastructure shared logically among many customers?",["Public cloud","Private cloud","On-premises only","Air-gapped edge"],0,"A public cloud uses provider-owned shared infrastructure with logical tenant isolation.","When might a hybrid cloud be preferred instead?"),
-Q("c04",C,"Cloud models","A company keeps sensitive systems on-premises but connects them to Azure services. Which cloud model is this?",["Public only","Private only","Hybrid cloud","SaaS only"],2,"Hybrid cloud combines on-premises or private infrastructure with public cloud services.","What business constraint might make hybrid cloud useful during a migration?"),
-Q("c05",C,"Consumption model","What is the main idea of consumption-based cloud pricing?",["Pay for what you use","Pay one lifetime fee","Buy all hardware up front","Costs never vary"],0,"Consumption-based pricing ties cost to actual resource usage rather than requiring all infrastructure up front.","Why is this useful for seasonal workloads?"),
-Q("c06",C,"CapEx vs OpEx","A company replaces a large server purchase with monthly Azure usage charges. Which spending model increases?",["CapEx","OpEx","Depreciation only","Sunk cost"],1,"Recurring cloud consumption is generally categorized as operational expenditure.","How can OpEx improve flexibility when demand is uncertain?"),
-Q("c07",C,"Serverless","Which description best matches serverless computing?",["No servers physically exist","The provider manages infrastructure while code runs on demand","Every workload uses a dedicated VM","Only storage is available"],1,"Serverless abstracts server management from the customer while executing code or workloads on demand.","What type of event-driven workload fits serverless well?"),
-Q("c08",C,"High availability","What does high availability primarily aim to improve?",["Service uptime","Data compression","Password length","Capital depreciation"],0,"High availability designs reduce service interruption and increase uptime.","How can multiple availability zones improve availability?"),
-Q("c09",C,"Scalability","A company permanently increases VM capacity as its normal user base grows. What characteristic is this?",["Scalability","Sovereignty","Governance","Encryption"],0,"Scalability is the ability to increase or decrease capacity to meet workload demand.","How is elasticity different from this example?"),
-Q("c10",C,"Elasticity","An app automatically adds instances for a flash sale and removes them afterward. What is this?",["Elasticity","Compliance","Capital expenditure","Archiving"],0,"Elasticity dynamically adds and removes resources as demand changes.","Why can elasticity reduce wasted spending?"),
-Q("c11",C,"Reliability","Which cloud benefit focuses on recovering from failures and continuing operation?",["Reliability","Licensing","Tagging","Peering"],0,"Reliability includes resilient design, recovery and continued operation despite failures.","How does redundancy contribute to reliability?"),
-Q("c12",C,"Predictability","Why can cloud services improve cost predictability?",["Usage and pricing tools can estimate and track spend","Cloud costs are always fixed","Azure has no variable charges","All services are free"],0,"Pricing calculators, budgets and usage data help forecast and monitor cloud spending.","What would make a monthly cloud bill less predictable?"),
-Q("c13",C,"Cloud security benefits","Which statement best describes a cloud security benefit?",["Providers can supply centralized security capabilities at scale","Security becomes unnecessary","Customers have zero responsibility","Passwords are eliminated automatically"],0,"Cloud providers offer broad security tooling, but customers still retain responsibilities under the shared responsibility model.","Why doesn't moving to the cloud eliminate customer security work?"),
-Q("c14",C,"Manageability","Which is an example of cloud manageability?",["Deploying resources through a portal, CLI or automation","Replacing every network with paper records","Disabling monitoring","Buying hardware before every test"],0,"Cloud platforms support centralized management and automation through multiple interfaces.","Why does automation improve repeatability?"),
-Q("c15",C,"IaaS","Which service model gives the customer the most control over the operating system?",["IaaS","PaaS","SaaS","All provide identical control"],0,"IaaS exposes virtualized infrastructure and leaves OS and application management largely to the customer.","What management burden comes with that extra control?"),
-Q("c16",C,"PaaS","A developer wants to deploy a web app without maintaining the underlying OS. Which model fits best?",["IaaS","PaaS","Colocation","Bare metal only"],1,"PaaS manages more of the underlying platform so developers can focus on the application.","How does PaaS shift the shared responsibility boundary?"),
-Q("c17",C,"SaaS","Microsoft 365 is most closely associated with which cloud service model?",["IaaS","PaaS","SaaS","Private networking"],2,"SaaS provides complete applications managed by the provider for end users.","What does a customer still commonly manage in SaaS?"),
-
-Q("a01",A,"Regions","What is an Azure region?",["A geographic area containing one or more datacenters","A user account","A billing invoice","A VM disk"],0,"An Azure region is a geographic area containing one or more datacenters connected through a low-latency network.","Why might data residency affect region selection?"),
-Q("a02",A,"Region pairs","What is a common purpose of Azure region pairs?",["Support resiliency and disaster recovery planning","Replace subscriptions","Create passwords","Remove all latency"],0,"Region pairing can support platform resiliency and disaster recovery strategies across geographically separated regions.","Would every workload automatically fail over just because regions are paired?"),
-Q("a03",A,"Sovereign regions","Why do sovereign Azure regions exist?",["To address specific government or regulatory requirements","To provide only gaming services","To avoid identity controls","To eliminate billing"],0,"Sovereign regions are designed for specific compliance, governmental or jurisdictional requirements.","What kind of organization might require a sovereign cloud?"),
-Q("a04",A,"Availability zones","A workload must survive failure of one datacenter in a region. What should you use?",["Availability Zones","One larger VM","A tag","A management group"],0,"Availability Zones are physically separate datacenter groupings within an Azure region.","What additional design would be needed for complete region failure?"),
-Q("a05",A,"Resource groups","What is the primary purpose of an Azure resource group?",["Logical container for related resources","Private network tunnel","Identity provider","Physical datacenter"],0,"Resource groups logically organize Azure resources for management, access and lifecycle operations.","Can resources in one resource group be in different Azure regions?"),
-Q("a06",A,"Subscriptions","What does an Azure subscription primarily provide?",["A billing and access-management boundary","A physical rack","A DNS record","A password vault only"],0,"Subscriptions act as billing and management boundaries and contain resource groups and resources.","Why might a company use separate subscriptions for departments?"),
-Q("a07",A,"Management groups","What is the purpose of Azure management groups?",["Organize and govern multiple subscriptions","Store blobs","Host websites","Create VPN tunnels"],0,"Management groups provide a governance scope above subscriptions.","How can policy inheritance help a large enterprise?"),
-Q("a08",A,"Azure hierarchy","Which order is correct from broadest to narrowest management scope?",["Management group → subscription → resource group → resource","Resource → management group → subscription → resource group","Subscription → tenant → region → resource","Resource group → management group → resource → subscription"],0,"Management groups can contain subscriptions; subscriptions contain resource groups; resource groups contain resources.","At which scopes can Azure RBAC assignments be applied?"),
-Q("a09",A,"Virtual machines","Which Azure compute option provides a full virtualized operating system you manage?",["Azure Virtual Machines","Azure Functions","Azure DNS","Azure Policy"],0,"Azure Virtual Machines provide IaaS compute with control of the guest OS.","When would a VM be preferable to App Service?"),
-Q("a10",A,"VM scale sets","What are Virtual Machine Scale Sets designed to do?",["Deploy and manage a group of load-balanced VMs that can scale","Create users","Archive files only","Replace VNets"],0,"VM Scale Sets simplify deployment, management and scaling of sets of similar VMs.","What workload pattern benefits from autoscaling a VM set?"),
-Q("a11",A,"Availability sets","What do availability sets help protect against?",["Certain hardware and maintenance failures within a datacenter","Entire global internet failure","All application bugs","Incorrect passwords"],0,"Availability sets spread VMs across fault and update domains to reduce correlated failures.","How do availability sets differ from availability zones?"),
-Q("a12",A,"Azure Virtual Desktop","Which service delivers Windows desktops and applications from Azure?",["Azure Virtual Desktop","Azure DNS","Azure Files Sync","Azure Policy"],0,"Azure Virtual Desktop provides cloud-hosted Windows desktops and apps.","What user scenario could benefit from centrally hosted desktops?"),
-Q("a13",A,"Containers","Why might containers be chosen instead of full VMs?",["They package apps with dependencies with less OS overhead","They always need more hardware","They replace identity","They cannot scale"],0,"Containers package applications and dependencies while sharing a host OS, usually with less overhead than VMs.","What does container orchestration add?"),
-Q("a14",A,"Azure Functions","Which Azure service is designed for event-driven serverless code?",["Azure Functions","Azure Dedicated Host","Azure Files","Azure VPN Gateway"],0,"Azure Functions executes event-driven code without requiring you to manage servers.","What billing advantage can event-driven execution provide?"),
-Q("a15",A,"App Service","Which service hosts web apps and APIs without requiring guest OS management?",["Azure App Service","Azure Virtual Machines only","Azure ExpressRoute","Azure Data Box"],0,"Azure App Service is a managed PaaS hosting platform for web apps and APIs.","What responsibility shifts to Microsoft compared with a VM?"),
-Q("a16",A,"Virtual networks","Which service provides a logically isolated network in Azure?",["Azure Virtual Network","Azure Advisor","Azure Monitor","Microsoft Purview"],0,"Azure Virtual Network provides private addressing, subnets, routing and isolation.","Why divide a VNet into subnets?"),
-Q("a17",A,"VNet peering","What does VNet peering enable?",["Private connectivity between virtual networks","Identity federation only","Cold storage","Cost budgeting"],0,"VNet peering connects Azure virtual networks privately over the Microsoft backbone.","Why might peering be preferable to sending traffic over the public internet?"),
-Q("a18",A,"Azure DNS","What is Azure DNS used for?",["Hosting and managing DNS domains and records","Patching VMs","Encrypting disks only","Creating budgets"],0,"Azure DNS hosts DNS zones and records using Azure infrastructure.","What does DNS translate for clients?"),
-Q("a19",A,"VPN vs ExpressRoute","A company wants encrypted site-to-site connectivity over the public internet. Which service fits?",["VPN Gateway","ExpressRoute","Azure Policy","Azure Advisor"],0,"VPN Gateway supports encrypted connectivity over the public internet.","What would you choose if the requirement explicitly said traffic must not traverse the public internet?"),
-Q("a20",A,"VPN vs ExpressRoute","A bank requires private connectivity to Azure that does not traverse the public internet. Which service fits?",["VPN Gateway","ExpressRoute","Azure DNS","Traffic Manager"],1,"ExpressRoute provides private connectivity to Microsoft cloud services through a connectivity provider.","Why can ExpressRoute be attractive for predictable enterprise connectivity?"),
-Q("a21",A,"Private endpoints","What does a private endpoint provide?",["A private IP address for accessing a supported Azure service from a VNet","A public website","A new subscription","A pricing estimate"],0,"Private endpoints expose supported services through a private IP in your virtual network.","How can private endpoints reduce public exposure?"),
-Q("a22",A,"Storage services","Which Azure storage service is best suited to unstructured object data such as images and video?",["Blob Storage","Azure Files","Queue Storage","Table Storage"],0,"Azure Blob Storage is optimized for unstructured object data.","When would Azure Files be a better fit?"),
-Q("a23",A,"Azure Files","Which Azure service provides managed SMB/NFS file shares?",["Azure Files","Blob Storage only","Azure Functions","Azure Policy"],0,"Azure Files provides managed cloud file shares accessible through common file protocols.","What migration scenario can Azure File Sync help with?"),
-Q("a24",A,"Storage tiers","Which Blob Storage access tier is intended for data accessed frequently?",["Hot","Cool","Archive","Offline-only"],0,"The hot tier is optimized for frequently accessed data.","Why might archive storage cost less but take longer to retrieve?"),
-Q("a25",A,"Storage redundancy","Which redundancy option synchronously copies data across availability zones in the primary region?",["LRS","ZRS","GRS","RA-GRS"],1,"Zone-redundant storage synchronously replicates across availability zones within a region.","Which redundancy family adds replication to a secondary region?"),
-Q("a26",A,"Storage tools","Which tool is a graphical application for working with Azure Storage data?",["Azure Storage Explorer","AzCopy","Azure Policy","Cloud Shell only"],0,"Azure Storage Explorer provides a GUI for browsing and managing storage accounts and data.","When might AzCopy be faster for scripted bulk transfers?"),
-Q("a27",A,"AzCopy","Which tool is a command-line utility optimized for copying data to and from Azure Storage?",["AzCopy","Azure Advisor","Microsoft Purview","Azure DNS"],0,"AzCopy is a command-line data transfer utility for Azure Storage.","Why is a CLI tool useful for repeatable transfers?"),
-Q("a28",A,"Azure File Sync","What does Azure File Sync allow?",["Cache Azure file shares on Windows Servers","Replace Entra ID","Create budgets","Host DNS zones"],0,"Azure File Sync can centralize file shares in Azure Files while caching them on Windows Servers.","How can this support a hybrid file-server environment?"),
-Q("a29",A,"Azure Migrate","What is Azure Migrate primarily used for?",["Assessing and migrating on-premises workloads to Azure","Creating user passwords","Monitoring only SaaS apps","Managing DNS records"],0,"Azure Migrate provides tools to discover, assess and migrate workloads to Azure.","Why perform an assessment before migration?"),
-Q("a30",A,"Azure Data Box","When is Azure Data Box especially useful?",["Moving very large datasets when network transfer is impractical","Creating RBAC roles","Hosting websites","Managing MFA"],0,"Data Box uses physical devices to move large amounts of data to or from Azure.","What limitation of network transfer does Data Box address?"),
-Q("a31",A,"Microsoft Entra ID","Which service provides cloud identity and access management for users, groups and apps?",["Microsoft Entra ID","Azure Load Balancer","Azure Backup","Azure Advisor"],0,"Microsoft Entra ID is Microsoft's cloud identity and access management service.","How does RBAC use Entra identities?"),
-Q("a32",A,"Entra Domain Services","What does Microsoft Entra Domain Services provide?",["Managed domain services such as domain join, LDAP and Kerberos/NTLM","Blob storage","Cost alerts","Public DNS only"],0,"Entra Domain Services provides managed traditional domain capabilities without customers managing domain controllers.","What legacy application need might make this useful?"),
-Q("a33",A,"Authentication","What does multifactor authentication require?",["Two or more verification factors","Only a longer password","A public IP","A resource lock"],0,"MFA requires more than one category of evidence, reducing reliance on a password alone.","Why does MFA reduce risk from a stolen password?"),
-Q("a34",A,"Single sign-on","What is the main benefit of single sign-on?",["Users authenticate once to access multiple authorized apps","Every app gets a different physical server","All permissions become admin","Passwords are sent publicly"],0,"SSO reduces repeated sign-ins by using a trusted identity session across authorized applications.","How can SSO improve user experience and centralize access control?"),
-Q("a35",A,"Passwordless","Which is an example of passwordless authentication?",["FIDO2 security key","Password plus password","Shared spreadsheet","Public IP address"],0,"FIDO2 keys, Windows Hello for Business and similar methods can authenticate without a traditional password.","What attack class can passwordless methods help reduce?"),
-Q("a36",A,"External identities","What are Microsoft Entra External Identities used for?",["Allowing partners, guests or customers to access resources with external identities","Creating storage tiers","Buying reservations","Scaling VMs"],0,"External Identities supports collaboration and customer/partner identity scenarios.","Why is guest access preferable to creating unmanaged shared accounts?"),
-Q("a37",A,"Conditional Access","What does Microsoft Entra Conditional Access do?",["Evaluates signals and enforces access controls","Copies storage blobs","Creates VNets","Calculates Azure prices"],0,"Conditional Access uses signals such as user, device, location and risk to apply access policies.","How might a policy treat a risky sign-in differently?"),
-Q("a38",A,"Azure RBAC","An admin should restart VMs but not manage the whole subscription. What should you use?",["Azure RBAC","Azure DNS","Availability Zones","Azure Front Door"],0,"Azure RBAC grants fine-grained permissions through roles at specific scopes.","Why is least privilege important when choosing a role and scope?"),
-Q("a39",A,"Zero Trust","Which principle is central to Zero Trust?",["Verify explicitly and use least privilege","Trust everything inside the network","Disable logging","Give every user admin rights"],0,"Zero Trust assumes breach, verifies explicitly and limits access through least privilege.","Why is network location alone not enough to establish trust?"),
-Q("a40",A,"Defense in depth","What is defense in depth?",["Using multiple security layers so one failure does not expose everything","Using one firewall only","Disabling identity controls","Keeping one backup"],0,"Defense in depth layers physical, identity, perimeter, network, compute, application and data protections.","Why are overlapping controls more resilient than a single control?"),
-Q("a41",A,"Defender for Cloud","What is Microsoft Defender for Cloud primarily designed to provide?",["Cloud security posture management and workload protection","DNS hosting","File synchronization","Subscription billing"],0,"Defender for Cloud helps assess security posture and protect cloud workloads.","How is a security recommendation different from an RBAC permission?"),
-
-Q("g01",G,"Cost factors","Which factor can directly affect Azure cost?",["Resource type, usage, region and data transfer","Monitor brightness","Keyboard layout","User wallpaper"],0,"Azure cost varies based on service type, consumption, region, data transfer and purchasing options.","Why can two identical workloads cost different amounts in different regions?"),
-Q("g02",G,"Pricing calculator","What is the Azure Pricing Calculator used for?",["Estimating expected Azure costs before deployment","Enforcing MFA","Creating VNets","Patching Windows"],0,"The Pricing Calculator estimates costs based on selected services, sizes and expected usage.","Why should estimates be revisited after real usage begins?"),
-Q("g03",G,"Cost Management","Which service helps analyze spending, create budgets and monitor cost trends?",["Microsoft Cost Management","Azure DNS","Entra Domain Services","Load Balancer"],0,"Microsoft Cost Management provides cost analysis, budgets, alerts and optimization information.","How is a budget alert different from a service health alert?"),
-Q("g04",G,"Tags","What is a common purpose of Azure tags?",["Add metadata for organization and cost allocation","Encrypt every packet","Create identities","Replace subscriptions"],0,"Tags add key-value metadata that can help organize resources and allocate costs.","Why might a CostCenter tag be useful?"),
-Q("g05",G,"Microsoft Purview","What is Microsoft Purview primarily associated with?",["Data governance, discovery and compliance capabilities","VM autoscaling","DNS resolution","VPN tunneling"],0,"Microsoft Purview provides data governance, risk and compliance capabilities across data estates.","Why is discovering sensitive data useful for governance?"),
-Q("g06",G,"Azure Policy","An organization requires approved regions and mandatory tags. Which service should enforce this?",["Azure Policy","Azure Functions","Azure Bastion","Queue Storage"],0,"Azure Policy evaluates resources against organizational standards and can audit, deny or remediate configurations.","How is Policy different from RBAC?"),
-Q("g07",G,"Resource locks","Which feature helps prevent accidental deletion of a critical resource?",["Resource lock","NSG","Cost alert","Availability set"],0,"A CanNotDelete lock can prevent deletion even when a user otherwise has permission.","Does a resource lock replace RBAC?"),
-Q("g08",G,"Azure portal","What is the Azure portal?",["A browser-based graphical interface for managing Azure","A physical datacenter","A storage protocol","A password standard"],0,"The Azure portal is a browser-based GUI for creating, configuring and monitoring Azure resources.","When might CLI automation be better than repeated portal clicks?"),
-Q("g09",G,"Cloud Shell","What is Azure Cloud Shell?",["A browser-accessible shell with Azure CLI and PowerShell tooling","A storage tier","A region pair","A VM hardware type"],0,"Cloud Shell provides an authenticated browser-based shell environment for Azure administration.","Why is Cloud Shell convenient when working from a new computer?"),
-Q("g10",G,"Azure CLI","Which command-line tool is cross-platform and uses commands beginning with az?",["Azure CLI","Azure Policy","Azure Advisor","Azure DNS"],0,"Azure CLI is a cross-platform command-line interface whose commands generally begin with az.","Why are CLI scripts useful for repeatable deployment tasks?"),
-Q("g11",G,"Azure PowerShell","Which tool manages Azure using PowerShell cmdlets?",["Azure PowerShell","AzCopy","Azure Storage Explorer","Data Box"],0,"Azure PowerShell provides PowerShell modules and cmdlets for Azure management.","When might an existing PowerShell administrator prefer this over Azure CLI?"),
-Q("g12",G,"Azure Arc","What is Azure Arc designed to help manage?",["Resources across Azure, on-premises and other clouds","Only Azure DNS records","Only user passwords","Only storage pricing"],0,"Azure Arc extends Azure management and governance capabilities to resources outside Azure.","Why is this useful in hybrid or multicloud environments?"),
-Q("g13",G,"Infrastructure as code","What does infrastructure as code mean?",["Defining infrastructure in machine-readable files for repeatable deployment","Buying hardware with code","Writing only application code","Managing everything manually"],0,"IaC represents infrastructure declaratively or programmatically so deployments can be versioned and repeated.","How does IaC reduce configuration drift?"),
-Q("g14",G,"ARM","What is Azure Resource Manager?",["The deployment and management service for Azure","A file protocol","A passwordless method","A storage tier"],0,"Azure Resource Manager is Azure's management layer for deploying, organizing and controlling resources.","Why do resource groups and RBAC integrate closely with ARM?"),
-Q("g15",G,"ARM templates","What is an ARM template?",["A declarative JSON file describing Azure resources to deploy","A VM image only","A cost invoice","A DNS zone"],0,"ARM templates describe desired Azure infrastructure declaratively for repeatable deployments.","What benefit does a declarative template provide over clicking through a portal?"),
-Q("g16",G,"Azure Advisor","Which service gives personalized recommendations for cost, reliability, security, performance and operational excellence?",["Azure Advisor","Azure Queue Storage","VPN Gateway","DevTest Labs"],0,"Azure Advisor analyzes deployed resources and provides optimization recommendations.","Would Advisor or Policy be better for enforcing a mandatory standard?"),
-Q("g17",G,"Azure Service Health","Which service communicates Azure service issues, planned maintenance and health advisories relevant to you?",["Azure Service Health","Azure Files","Azure DNS","Azure RBAC"],0,"Azure Service Health provides personalized information about service incidents, planned maintenance and advisories.","How is Service Health different from monitoring CPU usage on your VM?"),
-Q("g18",G,"Azure Monitor","Which platform collects and analyzes metrics, logs and telemetry from Azure resources?",["Azure Monitor","Azure Migrate","Azure Data Box","Entra External ID"],0,"Azure Monitor is the central observability platform for metrics, logs, alerts and application telemetry.","What could you configure if CPU usage stays above a threshold?"),
-Q("g19",G,"Log Analytics","What is a Log Analytics workspace used for?",["Collecting and querying log data with Azure Monitor Logs","Creating VPNs","Estimating prices","Hosting DNS"],0,"Log Analytics workspaces store and query log data used by Azure Monitor Logs.","Why can centralized logs speed troubleshooting?"),
-Q("g20",G,"Azure Monitor alerts","What do Azure Monitor alerts do?",["Notify or trigger actions when monitored conditions are met","Create users automatically by default","Replace all backups","Host web apps"],0,"Azure Monitor alerts evaluate signals and can notify people or trigger automated actions.","What alert might you configure for sustained high CPU?"),
-Q("g21",G,"Application Insights","What is Application Insights used for?",["Application performance monitoring and telemetry","Physical data shipment","DNS hosting","Subscription hierarchy"],0,"Application Insights, part of Azure Monitor, provides application performance and usage telemetry.","What application problem could request tracing help diagnose?")
+const STORAGE_KEY="az900QuestV4",OLD_KEYS=["az900AdaptiveTrainerV3","az900AdaptiveTrainerV2"];
+const DOMAINS=[{name:C,weight:[25,30]},{name:A,weight:[35,40]},{name:G,weight:[30,35]}];
+const WORLDS=[
+ {name:"Cloud Foundations",icon:"☁️",boss:"b06"},
+ {name:"Compute Forge",icon:"⚙️",boss:"b05"},
+ {name:"Network Frontier",icon:"🌐",boss:"b01"},
+ {name:"Storage Vault",icon:"💾",boss:"b02"},
+ {name:"Identity Citadel",icon:"🛡️",boss:"b04"},
+ {name:"Governance Tower",icon:"🏛️",boss:"b03"}
+];
+const RANKS=["Cloud Recruit","Azure Explorer","Cloud Technician","Azure Operator","Cloud Engineer","Azure Specialist","Cloud Architect","Azure Vanguard"];
+const ACHIEVEMENTS=[
+ ["first","🚀","First Deployment","Complete your first study session"],
+ ["streak7","🔥","Hot Streak","Reach a 7-day study streak"],
+ ["repair5","🧠","False Confidence Destroyed","Repair 5 misconceptions"],
+ ["feynman10","🧑‍🏫","Teach the Cloud","Complete 10 teach-back checkpoints"],
+ ["network","🌐","Network Engineer Energy","Master the Network Frontier"],
+ ["identity","🛡️","Zero Trust","Master the Identity Citadel"],
+ ["boss3","👑","Boss Hunter","Defeat 3 world bosses"],
+ ["exam90","🎓","No Guessing Required","Score 90%+ on Exam Simulation"],
+ ["gauntlet80","⚔️","Overprepared","Score 80%+ in the Gauntlet"],
+ ["mastery85","🏆","AZ-900 Ready","Reach 85% effective mastery"]
 ];
 
-const STORAGE_KEY="az900AdaptiveTrainerV3",DOMAINS=[{name:C,weight:"25–30%"},{name:A,weight:"35–40%"},{name:G,weight:"30–35%"}];
-const defaultState=()=>({answered:0,correct:0,highConfidenceMisses:0,lastStudyDate:null,streak:0,concepts:{},confusions:[],history:[],examHistory:[]});
-let state=loadState(),session=null,selectedAnswer=null,flashSession=null,timerHandle=null;
-const $=id=>document.getElementById(id),views=["dashboard-view","quiz-view","flashcard-view","feynman-view","results-view"];
-function loadState(){try{return {...defaultState(),...(JSON.parse(localStorage.getItem(STORAGE_KEY))||{})}}catch{return defaultState()}}
+const defaultState=()=>({answered:0,correct:0,highConfidenceMisses:0,lastStudyDate:null,streak:0,streakShields:0,xp:0,
+ concepts:{},confusions:[],history:[],achievements:[],bossWins:[],feynmanCount:0,repairs:0,daily:null});
+let state=loadState(),session=null,selectedAnswer=null,examTimer=null,flashQueue=[],flashIndex=0,currentFlash=null;
+const $=id=>document.getElementById(id);
+const views=["dashboard-view","quiz-view","flashcard-view","feynman-view","results-view"];
+
+function loadState(){
+ try{
+  let raw=localStorage.getItem(STORAGE_KEY);
+  if(!raw){for(const k of OLD_KEYS){if(localStorage.getItem(k)){raw=localStorage.getItem(k);break}}}
+  const old=raw?JSON.parse(raw):{};
+  return {...defaultState(),...old,concepts:old.concepts||{},confusions:old.confusions||[],history:old.history||[],achievements:old.achievements||[],bossWins:old.bossWins||[]};
+ }catch{return defaultState()}
+}
 function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
-function showView(id){views.forEach(v=>$(v).classList.toggle("hidden",v!==id));scrollTo({top:0,behavior:"smooth"})}
-function cs(concept){if(!state.concepts[concept])state.concepts[concept]={attempts:0,correct:0,mastery:0,nextReview:0,interval:0,highConfidenceMisses:0,lastSeen:0};return state.concepts[concept]}
-function uniqueConcepts(){return [...new Set(QUESTION_BANK.map(q=>q.concept))]}
-function mastery(c){return Math.round(cs(c).mastery||0)}
-function overall(){return Math.round(uniqueConcepts().reduce((s,c)=>s+mastery(c),0)/uniqueConcepts().length)}
-function due(c){const x=cs(c);return x.attempts>0&&(!x.nextReview||x.nextReview<=Date.now())}
-function dueCount(){return uniqueConcepts().filter(due).length}
-function domainMastery(d){const a=[...new Set(QUESTION_BANK.filter(q=>q.domain===d).map(q=>q.concept))];return Math.round(a.reduce((s,c)=>s+mastery(c),0)/a.length)}
-function learningState(c){const x=cs(c),m=mastery(c);if(!x.attempts)return"new";if(m>=85&&x.highConfidenceMisses===0&&!due(c))return"mastered";if(due(c)||x.highConfidenceMisses>0)return"review";return"learning"}
-function escapeHtml(s){return String(s||"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]))}
-function updateStreak(){const t=new Date().toISOString().slice(0,10);if(state.lastStudyDate===t)return;const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);state.streak=state.lastStudyDate===yesterday?(state.streak||0)+1:1;state.lastStudyDate=t}
-function readiness(){const m=overall(),unseen=uniqueConcepts().filter(c=>!cs(c).attempts).length;if(unseen>15)return"Building baseline";if(m>=85&&dueCount()<6)return"Exam ready";if(m>=70)return"Nearly ready";if(m>=50)return"Developing";return"Building baseline"}
-function priority(q){const x=cs(q.concept),st=learningState(q.concept);return (100-mastery(q.concept))*2+(x.highConfidenceMisses||0)*55+(st==="review"?45:0)+(st==="new"?28:0)+Math.random()*12}
-function interleave(pool,count){pool=[...pool].sort((a,b)=>priority(b)-priority(a));const out=[];let last=null;while(out.length<count&&pool.length){let i=pool.findIndex(q=>q.domain!==last);if(i<0)i=0;const q=pool.splice(i,1)[0];out.push(q);last=q.domain}return out}
-function adaptiveQueue(count=12,mode="learn"){let pool=[...QUESTION_BANK];if(mode==="review"){const concepts=new Set(uniqueConcepts().filter(c=>due(c)||cs(c).highConfidenceMisses>0||mastery(c)<60));pool=pool.filter(q=>concepts.has(q.concept));if(!pool.length)pool=[...QUESTION_BANK]}if(mode==="weak"){const concepts=new Set(uniqueConcepts().filter(c=>mastery(c)<75||cs(c).highConfidenceMisses>0));pool=pool.filter(q=>concepts.has(q.concept))}return interleave(pool,Math.min(count,pool.length))}
-function examQueue(count=40){const targets={[C]:11,[A]:15,[G]:14},out=[];for(const [d,n] of Object.entries(targets)){const p=QUESTION_BANK.filter(q=>q.domain===d).sort(()=>Math.random()-.5);out.push(...p.slice(0,n))}return out.sort(()=>Math.random()-.5).slice(0,count)}
-function renderDashboard(){const states={new:0,learning:0,review:0,mastered:0};uniqueConcepts().forEach(c=>states[learningState(c)]++);$("overall-mastery").textContent=overall()+"%";$("questions-answered").textContent=state.answered;$("due-review").textContent=dueCount();$("high-confidence-misses").textContent=state.highConfidenceMisses;$("streak").textContent=`${state.streak||0} day${state.streak===1?"":"s"} streak`;$("readiness-label").textContent=readiness();$("state-summary").innerHTML=[["new","New"],["learning","Learning"],["review","Review"],["mastered","Mastered"]].map(([k,l])=>`<div class="state-card state-${k}"><span class="muted">${l}</span><strong>${states[k]}</strong></div>`).join("");const weak=uniqueConcepts().sort((a,b)=>(cs(b).highConfidenceMisses-cs(a).highConfidenceMisses)||(mastery(a)-mastery(b)));const plan=[];if(dueCount())plan.push(`Clear ${Math.min(dueCount(),5)} due spaced-repetition concept${dueCount()===1?"":"s"}.`);if(state.highConfidenceMisses)plan.push("Repair high-confidence misses before adding too much new material.");plan.push("Interleave all three exam domains to force retrieval instead of pattern matching.");plan.push(`Finish by explaining ${weak[0]||"one Azure concept"} in your own words.`);$("study-plan").innerHTML=plan.map(x=>`<li>${x}</li>`).join("");$("domain-mastery").innerHTML=DOMAINS.map(d=>{const m=domainMastery(d.name);return`<div class="domain-row"><div class="domain-row-top"><strong>${d.name}</strong><span>${m}% · ${d.weight}</span></div><div class="meter"><div style="width:${m}%"></div></div></div>`}).join("");const issues=weak.filter(c=>cs(c).attempts||cs(c).highConfidenceMisses).slice(0,6);$("misconception-list").innerHTML=issues.length?issues.map(c=>{const x=cs(c),note=state.confusions.filter(n=>n.concept===c).at(-1);return`<div class="misconception-item"><strong>${c}</strong><span class="muted">${learningState(c)} · mastery ${mastery(c)}%${x.highConfidenceMisses?` · ${x.highConfidenceMisses} confident miss${x.highConfidenceMisses===1?"":"es"}`:""}</span>${note?`<p class="muted">Your note: ${escapeHtml(note.note)}</p>`:""}</div>`}).join(""):"<p class='muted'>No misconception data yet. Start Learn Mode to build your baseline.</p>";saveState()}
-function startSession(mode="learn"){clearInterval(timerHandle);updateStreak();const isExam=mode==="exam",questions=isExam?examQueue(40):adaptiveQueue(mode==="review"?Math.max(8,Math.min(16,dueCount()*2)):12,mode);session={mode,questions,index:0,correct:0,confSum:0,confCount:0,improved:new Set(),scheduled:0,answers:[],timeLeft:isExam?2700:0};selectedAnswer=null;$("mode-label").textContent=isExam?"Exam mode":mode==="review"?"Review mode":"Learn mode";$("session-title").textContent=isExam?"40-question exam simulation":mode==="review"?"Spaced-repetition review":"Adaptive learning session";$("timer-pill").classList.toggle("hidden",!isExam);if(isExam){updateTimer();timerHandle=setInterval(()=>{session.timeLeft--;updateTimer();if(session.timeLeft<=0){clearInterval(timerHandle);finishSession()}},1000)}showView("quiz-view");renderQuestion()}
-function updateTimer(){if(!session)return;const m=String(Math.floor(session.timeLeft/60)).padStart(2,"0"),s=String(session.timeLeft%60).padStart(2,"0");$("timer-pill").textContent=`${m}:${s}`}
-function renderQuestion(){const q=session.questions[session.index];selectedAnswer=null;$("progress-text").textContent=`${session.index+1} / ${session.questions.length}`;$("session-score").textContent=`${session.correct} correct`;$("progress-bar").style.width=`${(session.index/session.questions.length)*100}%`;$("domain-tag").textContent=q.domain;$("concept-tag").textContent=q.concept;$("question-text").textContent=q.q;$("generation-prompt").textContent=session.mode==="exam"?"Choose the best answer. Feedback is hidden until the end.":"Commit to an answer before seeing feedback.";$("answers").innerHTML=q.options.map((o,i)=>`<button class="answer-btn" data-index="${i}">${String.fromCharCode(65+i)}. ${escapeHtml(o)}</button>`).join("");$("confidence-panel").classList.add("hidden");$("feedback-panel").classList.add("hidden");$("confusion-box").classList.add("hidden");$("transfer-box").classList.add("hidden");$("confusion-input").value="";document.querySelectorAll(".answer-btn").forEach(b=>b.onclick=()=>selectAnswer(+b.dataset.index))}
-function selectAnswer(i){if(selectedAnswer!==null)return;selectedAnswer=i;document.querySelectorAll(".answer-btn").forEach((b,j)=>b.classList.toggle("selected",j===i));if(session.mode==="exam"){commitAnswer(2)}else $("confidence-panel").classList.remove("hidden")}
-function commitAnswer(conf){const q=session.questions[session.index],correct=selectedAnswer===q.answer,before=mastery(q.concept),x=cs(q.concept);session.confSum+=conf;session.confCount++;if(correct)session.correct++;session.answers.push({id:q.id,answer:selectedAnswer,correct,confidence:conf});state.answered++;if(correct)state.correct++;x.attempts++;if(correct)x.correct++;x.lastSeen=Date.now();let delta=correct?(conf===3?12:conf===2?10:8):-(conf===3?18:conf===2?12:8);x.mastery=Math.max(0,Math.min(100,(x.mastery||0)+delta));if(!correct&&conf===3){x.highConfidenceMisses=(x.highConfidenceMisses||0)+1;state.highConfidenceMisses++}if(correct&&x.highConfidenceMisses&&x.mastery>=70)x.highConfidenceMisses=Math.max(0,x.highConfidenceMisses-1);scheduleReview(x,correct,conf);if(mastery(q.concept)>before)session.improved.add(q.concept);session.scheduled++;state.history.push({date:Date.now(),id:q.id,concept:q.concept,correct,confidence:conf});if(state.history.length>500)state.history=state.history.slice(-500);saveState();if(session.mode==="exam"){session.index++;if(session.index>=session.questions.length)finishSession();else renderQuestion();return}document.querySelectorAll(".answer-btn").forEach((b,j)=>{b.disabled=true;if(j===q.answer)b.classList.add("correct");else if(j===selectedAnswer)b.classList.add("incorrect")});$("confidence-panel").classList.add("hidden");const fp=$("feedback-panel");fp.className=`feedback-panel ${correct?"success":"error"}`;$("feedback-title").textContent=correct?"Correct — now strengthen the connection.":conf===3?"Confidently wrong — priority misconception.":"Not yet — repair the mental model.";$("feedback-text").textContent=q.explanation;$("transfer-text").textContent=q.transfer;$("transfer-box").classList.remove("hidden");$("confusion-box").classList.toggle("hidden",correct);fp.classList.remove("hidden")}
-function scheduleReview(x,correct,conf){const day=86400000;if(!correct){x.interval=conf===3?0.25:0.5}else{x.interval=!x.interval?1:Math.min(30,x.interval*(conf===3?2.5:conf===2?2:1.5))}x.nextReview=Date.now()+x.interval*day}
-document.querySelectorAll(".confidence-btn").forEach(b=>b.onclick=()=>commitAnswer(+b.dataset.confidence));
-$("save-confusion").onclick=()=>{const note=$("confusion-input").value.trim();if(!note)return;const q=session.questions[session.index];state.confusions.push({date:Date.now(),concept:q.concept,note});saveState();$("save-confusion").textContent="Saved"};
-$("next-question").onclick=()=>{session.index++;if(session.index>=session.questions.length){if(session.mode!=="exam"&&session.questions.length>=8)showFeynman();else finishSession()}else renderQuestion()};
-function showFeynman(){const weakest=[...session.questions].sort((a,b)=>mastery(a.concept)-mastery(b.concept))[0];session.feynman=weakest;$("feynman-prompt").textContent=`Explain ${weakest.concept}: what it is, when you would use it, and one thing it is commonly confused with.`;$("feynman-answer").value="";$("feynman-key").classList.add("hidden");$("finish-feynman").classList.add("hidden");showView("feynman-view")}
-$("show-feynman-key").onclick=()=>{const q=session.feynman;$("feynman-key").innerHTML=`<h4>Key idea</h4><p>${escapeHtml(q.explanation)}</p><p><strong>Transfer prompt:</strong> ${escapeHtml(q.transfer)}</p><p class="muted">Compare your explanation for accuracy and simplicity. The act of generating it before seeing this is the important part.</p>`;$("feynman-key").classList.remove("hidden");$("finish-feynman").classList.remove("hidden")};$("finish-feynman").onclick=finishSession;
-function finishSession(){clearInterval(timerHandle);if(!session)return;const pct=Math.round(session.correct/session.questions.length*100),avg=session.confCount?(session.confSum/session.confCount).toFixed(1):"—";if(session.mode==="exam")state.examHistory.push({date:Date.now(),score:pct,count:session.questions.length});saveState();$("results-heading").textContent=session.mode==="exam"?(pct>=70?"Strong exam run.":"Good diagnostic run."):pct>=80?"Strong session.":pct>=60?"Progress made.":"We found the weak spots.";$("results-summary").textContent=session.mode==="exam"?`You scored ${pct}%. Use the dashboard and Review Mode to attack the concepts behind your misses.`:`You answered ${session.correct} of ${session.questions.length} correctly. The scheduler has already adjusted what comes back next.`;$("result-accuracy").textContent=pct+"%";$("result-confidence").textContent=avg==="—"?avg:`${avg}/3`;$("result-improved").textContent=session.improved.size;$("result-review").textContent=session.scheduled;showView("results-view")}
-function startFlashcards(){updateStreak();const cards=interleave([...QUESTION_BANK],Math.min(20,QUESTION_BANK.length));flashSession={cards,index:0};showView("flashcard-view");renderFlash()}
-function renderFlash(){if(flashSession.index>=flashSession.cards.length){renderDashboard();showView("dashboard-view");return}const q=flashSession.cards[flashSession.index];$("flash-progress").textContent=`${flashSession.index+1} / ${flashSession.cards.length}`;$("flash-domain").textContent=`${q.domain} · ${q.concept}`;$("flash-front").textContent=q.q;$("flash-back").innerHTML=`<strong>${escapeHtml(q.options[q.answer])}</strong><p>${escapeHtml(q.explanation)}</p>`;$("flash-back").classList.add("hidden");$("reveal-flash").classList.remove("hidden");document.querySelectorAll(".flash-grade").forEach(b=>b.classList.add("hidden"))}
-$("reveal-flash").onclick=()=>{$("flash-back").classList.remove("hidden");$("reveal-flash").classList.add("hidden");document.querySelectorAll(".flash-grade").forEach(b=>b.classList.remove("hidden"))};document.querySelectorAll(".flash-grade").forEach(b=>b.onclick=()=>{const q=flashSession.cards[flashSession.index],x=cs(q.concept),grade=b.dataset.grade,days={again:.1,hard:1,good:3,easy:7}[grade];x.attempts=Math.max(1,x.attempts);x.mastery=Math.max(0,Math.min(100,(x.mastery||0)+({again:-8,hard:2,good:6,easy:10}[grade])));x.interval=days;x.nextReview=Date.now()+days*86400000;x.lastSeen=Date.now();saveState();flashSession.index++;renderFlash()});
-$("start-learn").onclick=()=>startSession("learn");$("start-review").onclick=()=>startSession("review");$("start-exam").onclick=()=>startSession("exam");$("start-flashcards").onclick=startFlashcards;$("return-dashboard").onclick=()=>{renderDashboard();showView("dashboard-view")};$("retry-weak").onclick=()=>startSession("weak");$("reset-progress").onclick=()=>{if(confirm("Reset all mastery, history, streaks and misconception notes?")){localStorage.removeItem(STORAGE_KEY);state=defaultState();renderDashboard()}};
+function esc(s=""){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+function today(){return new Date().toISOString().slice(0,10)}
+function days(a,b=Date.now()){return Math.max(0,(new Date(b)-new Date(a))/86400000)}
+function showView(id){views.forEach(v=>$(v).classList.toggle("hidden",v!==id));window.scrollTo({top:0,behavior:"smooth"})}
+function conceptState(c){
+ if(!state.concepts[c])state.concepts[c]={attempts:0,correct:0,mastery:0,nextReview:0,interval:0,highConfidenceMisses:0,lastSeen:0};
+ return state.concepts[c]
+}
+function effectiveMastery(c){
+ const cs=conceptState(c); if(!cs.attempts)return 0;
+ const age=cs.lastSeen?days(cs.lastSeen):0,decay=Math.max(0,age-5)*1.5;
+ return Math.max(0,Math.round((cs.mastery||0)-decay))
+}
+function conceptStatus(c){const m=effectiveMastery(c),cs=conceptState(c);if(!cs.attempts)return"New";if(m>=85&&cs.interval>=7)return"Mastered";if(cs.nextReview&&cs.nextReview<=Date.now())return"Review";return"Learning"}
+function allConcepts(){return [...new Set(QUESTION_BANK.filter(q=>q.difficulty!=="boss").map(q=>q.concept))]}
+function overallMastery(){const a=allConcepts();return Math.round(a.reduce((s,c)=>s+effectiveMastery(c),0)/a.length)}
+function domainMastery(d){const a=[...new Set(QUESTION_BANK.filter(q=>q.domain===d&&q.difficulty!=="boss").map(q=>q.concept))];return Math.round(a.reduce((s,c)=>s+effectiveMastery(c),0)/a.length)}
+function worldMastery(w){const a=[...new Set(QUESTION_BANK.filter(q=>q.world===w&&q.difficulty!=="boss").map(q=>q.concept))];return a.length?Math.round(a.reduce((s,c)=>s+effectiveMastery(c),0)/a.length):0}
+function dueCount(){return Object.values(state.concepts).filter(c=>c.attempts&&(!c.nextReview||c.nextReview<=Date.now())).length}
+function readiness(){
+ const weighted=DOMAINS.reduce((s,d)=>s+domainMastery(d.name)*((d.weight[0]+d.weight[1])/2),0)/DOMAINS.reduce((s,d)=>s+(d.weight[0]+d.weight[1])/2,0);
+ const penalty=Math.min(18,state.highConfidenceMisses*1.5);return Math.max(0,Math.round(weighted-penalty))
+}
+function levelFromXP(xp=state.xp){return Math.floor(Math.sqrt(xp/90))+1}
+function xpForLevel(l){return 90*(l-1)*(l-1)}
+function xpForNext(l){return 90*l*l}
+function rankForLevel(l){return RANKS[Math.min(RANKS.length-1,Math.floor((l-1)/4))]}
+function addXP(n,why=""){if(n<=0)return;const before=levelFromXP();state.xp+=n;const after=levelFromXP();saveState();if(after>before)toast(`Level up! ${rankForLevel(after)} · Lv ${after}`);else if(why)toast(`+${n} XP · ${why}`)}
+function toast(msg){$("toast").textContent=msg;$("toast").classList.remove("hidden");clearTimeout(toast.t);toast.t=setTimeout(()=>$("toast").classList.add("hidden"),2600)}
+function updateStreak(){
+ const t=today();if(state.lastStudyDate===t)return;
+ if(state.lastStudyDate){
+  const gap=Math.round(days(state.lastStudyDate,new Date(t)));
+  if(gap===1)state.streak++;
+  else if(gap===2&&state.streakShields>0){state.streakShields--;state.streak++}
+  else state.streak=1;
+ }else state.streak=1;
+ state.lastStudyDate=t;
+ if(state.streak>0&&state.streak%7===0)state.streakShields++;
+}
+function ensureDaily(){
+ const t=today();
+ if(!state.daily||state.daily.date!==t)state.daily={date:t,reviews:0,domains:[],repairs:0,feynman:0,complete:false};
+}
+function questDefs(){ensureDaily();return[
+ ["Memory Jogger",state.daily.reviews,3,"Complete 3 spaced reviews"],
+ ["Cloud Hopper",state.daily.domains.length,3,"Answer across all 3 exam domains"],
+ ["Mental Model Repair",state.daily.repairs,1,"Repair 1 misconception"],
+ ["Teach Azure",state.daily.feynman,1,"Complete 1 teach-back"]
+]}
+function checkDailyBonus(){ensureDaily();if(!state.daily.complete&&questDefs().every(q=>q[1]>=q[2])){state.daily.complete=true;addXP(150,"Daily quest bonus");toast("Daily quests complete · +150 XP")}}
+function awardAchievement(id){if(state.achievements.includes(id))return;state.achievements.push(id);const a=ACHIEVEMENTS.find(x=>x[0]===id);if(a){addXP(75,`Achievement: ${a[2]}`);toast(`Achievement unlocked: ${a[2]}`)}}
+function checkAchievements(lastMode=null,lastAccuracy=0){
+ if(state.history.length)awardAchievement("first");
+ if(state.streak>=7)awardAchievement("streak7");
+ if(state.repairs>=5)awardAchievement("repair5");
+ if(state.feynmanCount>=10)awardAchievement("feynman10");
+ if(worldMastery("Network Frontier")>=85)awardAchievement("network");
+ if(worldMastery("Identity Citadel")>=85)awardAchievement("identity");
+ if(state.bossWins.length>=3)awardAchievement("boss3");
+ if(lastMode==="exam"&&lastAccuracy>=90)awardAchievement("exam90");
+ if(lastMode==="gauntlet"&&lastAccuracy>=80)awardAchievement("gauntlet80");
+ if(overallMastery()>=85)awardAchievement("mastery85");
+}
+function priorityScore(q,hardBias=false){
+ const cs=conceptState(q.concept),due=!cs.nextReview||cs.nextReview<=Date.now();
+ return (100-effectiveMastery(q.concept))*2+(cs.highConfidenceMisses||0)*55+(due?35:0)+(cs.attempts===0?20:0)+(hardBias&&q.difficulty==="hard"?40:0)+Math.random()*10
+}
+function adaptiveQueue(count=12,weak=false){
+ let pool=QUESTION_BANK.filter(q=>q.difficulty!=="boss").sort((a,b)=>priorityScore(b)-priorityScore(a)),out=[],used=[];
+ while(out.length<count&&pool.length){let i=pool.findIndex(q=>!used.includes(q.domain));if(i<0){used=[];i=0}const q=pool.splice(i,1)[0];if(!weak||effectiveMastery(q.concept)<80||conceptState(q.concept).highConfidenceMisses)out.push(q);used.push(q.domain)}
+ return out
+}
+function reviewQueue(count=12){
+ const dueConcepts=new Set(Object.entries(state.concepts).filter(([,cs])=>cs.attempts&&(!cs.nextReview||cs.nextReview<=Date.now())).map(([c])=>c));
+ let pool=QUESTION_BANK.filter(q=>dueConcepts.has(q.concept)&&q.difficulty!=="boss").sort((a,b)=>priorityScore(b)-priorityScore(a));
+ if(pool.length<count)pool.push(...adaptiveQueue(count-pool.length,true).filter(q=>!pool.includes(q)));
+ return pool.slice(0,count)
+}
+function examQueue(){
+ const standard=QUESTION_BANK.filter(q=>q.difficulty==="standard"),hard=QUESTION_BANK.filter(q=>q.difficulty==="hard");
+ const pick=(arr,n)=>arr.slice().sort(()=>Math.random()-.5).slice(0,n);
+ return [...pick(standard.filter(q=>q.domain===C),11),...pick(standard.filter(q=>q.domain===A),14),...pick(standard.filter(q=>q.domain===G),12),...pick(hard,3)].sort(()=>Math.random()-.5)
+}
+function gauntletQueue(){
+ const hard=QUESTION_BANK.filter(q=>q.difficulty==="hard"),boss=QUESTION_BANK.filter(q=>q.difficulty==="boss");
+ const base=[...hard,...hard,...boss].sort(()=>Math.random()-.5);
+ return base.slice(0,30)
+}
+function bossQueue(world){
+ const boss=QUESTION_BANK.find(q=>q.difficulty==="boss"&&q.world===world);
+ const related=QUESTION_BANK.filter(q=>q.world===world&&q.difficulty!=="boss").sort((a,b)=>priorityScore(b,true)-priorityScore(a,true)).slice(0,5);
+ return [...related,boss].sort(()=>Math.random()-.5)
+}
+function renderDashboard(){
+ ensureDaily();const l=levelFromXP(),start=xpForLevel(l),next=xpForNext(l),pct=Math.max(0,Math.min(100,(state.xp-start)/(next-start)*100));
+ $("level-pill").textContent=`Lv ${l}`;$("xp-pill").textContent=`${state.xp} XP`;$("streak").textContent=`${state.streak||0} day${state.streak===1?"":"s"} streak`;
+ $("xp-bar").style.width=`${pct}%`;$("rank-text").textContent=`${rankForLevel(l)} · ${next-state.xp} XP to level ${l+1}`;
+ $("overall-mastery").textContent=overallMastery()+"%";$("readiness").textContent=readiness()+"%";$("due-review").textContent=dueCount();$("high-confidence-misses").textContent=state.highConfidenceMisses;
+ $("focus-shield").textContent=(session?.shield??100)+"%";$("streak-shields").textContent=state.streakShields||0;
+ $("daily-quests").innerHTML=questDefs().map(([name,v,t,desc])=>`<div class="quest-card ${v>=t?"complete":""}"><div class="quest-top"><strong>${name}</strong><span>${Math.min(v,t)} / ${t}</span></div><p class="muted tiny">${desc}</p><div class="quest-progress"><div style="width:${Math.min(100,v/t*100)}%"></div></div></div>`).join("");
+ $("quest-bonus").textContent=state.daily.complete?"Bonus claimed ✓":"+150 XP bonus";
+ $("world-map").innerHTML=WORLDS.map(w=>{const m=worldMastery(w.name),unlocked=m>=55||state.bossWins.includes(w.name);const concepts=[...new Set(QUESTION_BANK.filter(q=>q.world===w.name&&q.difficulty!=="boss").map(q=>q.concept))].slice(0,7);
+ return `<article class="world-card ${unlocked?"":"locked"}"><p class="eyebrow">${w.icon} ${m}% mastery</p><h4>${w.name}</h4><div class="world-progress">${unlocked?"Boss unlocked":"Boss unlocks at 55% mastery"}</div><div class="world-nodes">${concepts.map(c=>`<span class="node ${conceptStatus(c).toLowerCase()}">${esc(c)}</span>`).join("")}</div><button class="boss-btn" data-world="${esc(w.name)}" ${unlocked?"":"disabled"}>${state.bossWins.includes(w.name)?"Replay Boss":"Challenge Boss"}</button></article>`}).join("");
+ document.querySelectorAll(".boss-btn").forEach(b=>b.addEventListener("click",()=>startSession("boss",bossQueue(b.dataset.world),b.dataset.world)));
+ const weak=allConcepts().sort((a,b)=>(conceptState(b).highConfidenceMisses-conceptState(a).highConfidenceMisses)||(effectiveMastery(a)-effectiveMastery(b)));
+ const plan=[];if(dueCount())plan.push(`Clear ${Math.min(3,dueCount())} due spaced reviews before new material.`);if(state.highConfidenceMisses)plan.push(`Attack confident misses first; false certainty is your highest-priority weakness.`);plan.push(`Interleave all three exam domains instead of blocking one topic for too long.`);plan.push(`Finish with a teach-back on ${weak[0]||"your weakest concept"}.`);$("study-plan").innerHTML=plan.map(x=>`<li>${x}</li>`).join("");
+ $("domain-mastery").innerHTML=DOMAINS.map(d=>{const m=domainMastery(d.name);return `<div class="domain-row"><div class="domain-row-top"><strong>${d.name}</strong><span>${m}% · ${d.weight[0]}–${d.weight[1]}%</span></div><div class="meter"><div style="width:${m}%"></div></div></div>`}).join("");
+ const counts={New:0,Learning:0,Review:0,Mastered:0};allConcepts().forEach(c=>counts[conceptStatus(c)]++);$("state-summary").innerHTML=Object.entries(counts).map(([k,v])=>`<div class="state-card"><span class="muted">${k}</span><strong>${v}</strong></div>`).join("");
+ const issues=weak.filter(c=>conceptState(c).attempts||conceptState(c).highConfidenceMisses).slice(0,6);$("misconception-list").innerHTML=issues.length?issues.map(c=>{const cs=conceptState(c),note=state.confusions.filter(x=>x.concept===c).slice(-1)[0];return `<div class="misconception-item"><strong>${esc(c)}</strong><span class="muted">Effective mastery ${effectiveMastery(c)}%${cs.highConfidenceMisses?` · ${cs.highConfidenceMisses} confident miss${cs.highConfidenceMisses===1?"":"es"}`:""}</span>${note?`<p class="muted tiny">Your note: ${esc(note.note)}</p>`:""}</div>`}).join(""):`<p class="muted">No misconceptions logged yet. The engine will surface them as you study.</p>`;
+ $("achievements").innerHTML=ACHIEVEMENTS.map(a=>`<div class="achievement ${state.achievements.includes(a[0])?"":"locked"}"><span class="icon">${a[1]}</span><strong>${a[2]}</strong><span class="muted tiny">${a[3]}</span></div>`).join("");
+ saveState()
+}
+function startSession(mode,queue=null,bossWorld=null){
+ updateStreak();ensureDaily();clearInterval(examTimer);
+ const cfg={learn:["Learn Mode","Adaptive learning",12],review:["Review Due","Spaced repetition",12],exam:["Exam Simulation","Representative difficulty",40],gauntlet:["Gauntlet","Harder than AZ-900",30],boss:["Boss Battle",bossWorld||"World Boss",6],weak:["Weakness Drill","Attack weak concepts",12]}[mode];
+ let q=queue||(mode==="learn"?adaptiveQueue(12):mode==="review"?reviewQueue(12):mode==="exam"?examQueue():mode==="gauntlet"?gauntletQueue():adaptiveQueue(12,true));
+ session={mode,queue:q,index:0,correct:0,conf:[],xp:0,shield:100,reviews:0,improved:new Set(),bossWorld,answers:[],started:Date.now(),timedOut:false};
+ $("mode-label").textContent=cfg[0];$("session-title").textContent=cfg[1];$("timer-pill").classList.toggle("hidden",!["exam","gauntlet"].includes(mode));
+ if(mode==="exam")startTimer(45*60);if(mode==="gauntlet")startTimer(35*60);showView("quiz-view");renderQuestion()
+}
+function startTimer(seconds){let remain=seconds;const paint=()=>{$("timer-pill").textContent=`${String(Math.floor(remain/60)).padStart(2,"0")}:${String(remain%60).padStart(2,"0")}`;if(remain<=0){clearInterval(examTimer);session.timedOut=true;finishSession()}remain--};paint();examTimer=setInterval(paint,1000)}
+function renderQuestion(){
+ if(session.index>=session.queue.length)return maybeFeynman();
+ selectedAnswer=null;const q=session.queue[session.index];
+ $("progress-text").textContent=`${session.index+1} / ${session.queue.length}`;$("session-score").textContent=`${session.correct} correct`;$("shield-pill").textContent=`Shield ${session.shield}%`;$("progress-bar").style.width=`${session.index/session.queue.length*100}%`;
+ $("difficulty-tag").textContent=q.difficulty==="boss"?"BOSS":q.difficulty==="hard"?"HARD":"STANDARD";$("domain-tag").textContent=q.domain;$("concept-tag").textContent=q.concept;$("question-text").textContent=q.q;
+ $("generation-prompt").textContent=session.mode==="exam"?"Exam mode: no feedback until the end.":session.mode==="gauntlet"?"Close distractors. Read every constraint.":"Commit to an answer before seeing feedback.";
+ $("answers").innerHTML=q.options.map((o,i)=>`<button class="answer-btn" data-i="${i}">${String.fromCharCode(65+i)}. ${esc(o)}</button>`).join("");
+ $("confidence-panel").classList.add("hidden");$("feedback-panel").className="feedback-panel hidden";$("confusion-box").classList.add("hidden");$("transfer-box").classList.add("hidden");$("confusion-input").value="";$("xp-earned").textContent="";
+ document.querySelectorAll(".answer-btn").forEach(b=>b.addEventListener("click",()=>selectAnswer(Number(b.dataset.i))))
+}
+function selectAnswer(i){selectedAnswer=i;document.querySelectorAll(".answer-btn").forEach((b,n)=>b.classList.toggle("selected",n===i));if(["exam","gauntlet"].includes(session.mode))submitAnswer(null);else $("confidence-panel").classList.remove("hidden")}
+function submitAnswer(confidence){
+ if(selectedAnswer===null)return;const q=session.queue[session.index],correct=selectedAnswer===q.answer,cs=conceptState(q.concept),before=effectiveMastery(q.concept);
+ session.answers.push({id:q.id,chosen:selectedAnswer,correct,confidence});if(correct)session.correct++;state.answered++;if(correct)state.correct++;
+ if(confidence)session.conf.push(confidence);updateConcept(q,correct,confidence);const after=effectiveMastery(q.concept);if(after>before)session.improved.add(q.concept);
+ ensureDaily();if(!state.daily.domains.includes(q.domain))state.daily.domains.push(q.domain);
+ if(session.mode==="review"){state.daily.reviews++;session.reviews++}
+ let earned=0;
+ if(!["exam","gauntlet"].includes(session.mode)){
+  earned=correct?(confidence===3?15:confidence===2?12:10):0;
+  if(correct&&cs.attempts>1&&before<60)earned+=8;if(q.difficulty==="hard"&&correct)earned+=8;if(q.difficulty==="boss"&&correct)earned+=15;
+  if(!correct){session.shield=Math.max(0,session.shield-(confidence===3?18:confidence===2?11:7));if(confidence===3){state.highConfidenceMisses++;cs.highConfidenceMisses=(cs.highConfidenceMisses||0)+1}}
+  else session.shield=Math.min(100,session.shield+2);
+  session.xp+=earned;addXP(earned,"retrieval");
+ }
+ state.history.push({date:Date.now(),id:q.id,concept:q.concept,correct,confidence,mode:session.mode});if(state.history.length>500)state.history=state.history.slice(-500);saveState();checkDailyBonus();
+ if(["exam","gauntlet"].includes(session.mode)){session.index++;return renderQuestion()}
+ revealFeedback(q,correct,confidence,earned)
+}
+function updateConcept(q,correct,confidence){
+ const cs=conceptState(q.concept);cs.attempts++;if(correct)cs.correct++;cs.lastSeen=Date.now();
+ let delta=correct?14:-12;if(confidence===3)delta+=correct?5:-9;if(q.difficulty==="hard")delta+=correct?3:-2;if(q.difficulty==="boss")delta+=correct?5:-3;
+ cs.mastery=Math.max(0,Math.min(100,(cs.mastery||0)+delta));
+ if(correct){cs.interval=cs.interval?Math.min(30,Math.max(1,Math.round(cs.interval*(confidence===3?2.1:confidence===2?1.7:1.3)))):1}else cs.interval=confidence===3?0.25:0.5;
+ cs.nextReview=Date.now()+cs.interval*86400000
+}
+function revealFeedback(q,correct,confidence,earned){
+ document.querySelectorAll(".answer-btn").forEach((b,n)=>{b.disabled=true;if(n===q.answer)b.classList.add("correct");if(n===selectedAnswer&&!correct)b.classList.add("incorrect")});
+ $("confidence-panel").classList.add("hidden");$("feedback-panel").className=`feedback-panel ${correct?"success":"error"}`;$("feedback-title").textContent=correct?"Retrieved correctly":"Good miss — now repair the model";$("feedback-text").textContent=q.explanation;$("xp-earned").textContent=earned?`+${earned} XP`:"No XP for the answer — recover XP by repairing the misconception.";
+ if(!correct)$("confusion-box").classList.remove("hidden");$("transfer-box").classList.remove("hidden");$("transfer-text").textContent=q.transfer
+}
+document.querySelectorAll("[data-confidence]").forEach(b=>b.addEventListener("click",()=>submitAnswer(Number(b.dataset.confidence))));
+$("save-confusion").addEventListener("click",()=>{const q=session.queue[session.index],note=$("confusion-input").value.trim();if(!note)return toast("Write what made the wrong answer seem right.");state.confusions.push({date:Date.now(),concept:q.concept,note});state.repairs++;ensureDaily();state.daily.repairs++;session.shield=Math.min(100,session.shield+12);session.xp+=25;addXP(25,"misconception repaired");$("shield-pill").textContent=`Shield ${session.shield}%`;$("save-confusion").disabled=true;$("save-confusion").textContent="Repaired ✓";checkDailyBonus();checkAchievements()});
+$("next-question").addEventListener("click",()=>{session.index++;renderQuestion()});
+function maybeFeynman(){clearInterval(examTimer);if(["exam","gauntlet"].includes(session.mode))return finishSession();const weakest=session.queue.slice().sort((a,b)=>effectiveMastery(a.concept)-effectiveMastery(b.concept))[0];session.feynman=weakest;showView("feynman-view");$("feynman-prompt").textContent=`Explain ${weakest.concept}: what it is, why it matters, and one situation where you'd use it.`;$("feynman-answer").value="";$("feynman-key").classList.add("hidden");$("finish-feynman").classList.add("hidden");$("show-feynman-key").classList.remove("hidden")}
+$("show-feynman-key").addEventListener("click",()=>{const q=session.feynman,txt=$("feynman-answer").value.trim();$("feynman-key").innerHTML=`<strong>Key idea to compare against</strong><p>${esc(q.explanation)}</p><p class="muted">Transfer: ${esc(q.transfer)}</p>${txt.length<50?`<p class="muted">Your explanation is very short. Try adding the why and a use case before continuing.</p>`:""}`;$("feynman-key").classList.remove("hidden");$("finish-feynman").classList.remove("hidden")});
+$("finish-feynman").addEventListener("click",()=>{state.feynmanCount++;ensureDaily();state.daily.feynman++;session.xp+=25;addXP(25,"teach-back completed");checkDailyBonus();checkAchievements();finishSession()});
+function finishSession(){
+ clearInterval(examTimer);if(!session)return;const accuracy=Math.round(session.correct/Math.max(1,session.queue.length)*100);
+ if(["exam","gauntlet"].includes(session.mode)){
+  const base=session.mode==="gauntlet"?Math.round(accuracy*1.5):Math.round(accuracy);session.xp+=base;addXP(base,session.mode==="gauntlet"?"Gauntlet completion":"Exam completion");
+ }
+ if(session.mode==="boss"&&accuracy>=80&&session.bossWorld&&!state.bossWins.includes(session.bossWorld)){state.bossWins.push(session.bossWorld);session.xp+=120;addXP(120,`${session.bossWorld} boss defeated`)}
+ state.history.push({date:Date.now(),type:"session",mode:session.mode,accuracy});checkAchievements(session.mode,accuracy);saveState();
+ $("results-heading").textContent=session.mode==="gauntlet"?(accuracy>=80?"You survived the Gauntlet.":"The Gauntlet found weaknesses."):session.mode==="boss"?(accuracy>=80?"Boss defeated.":"Boss survived. Train and return."):accuracy>=85?"Strong session.":"Useful session — weaknesses exposed.";
+ $("results-summary").textContent=session.timedOut?`Time expired. You finished with ${accuracy}% accuracy.`:`${session.correct} of ${session.queue.length} correct. ${session.mode==="gauntlet"?"These questions intentionally exceed typical AZ-900 difficulty.":""}`;
+ $("result-accuracy").textContent=accuracy+"%";$("result-xp").textContent=session.xp;$("result-shield").textContent=session.shield+"%";$("result-review").textContent=session.reviews||session.queue.length;
+ showView("results-view")
+}
+function startFlashcards(){
+ updateStreak();ensureDaily();const due=new Set(Object.entries(state.concepts).filter(([,c])=>c.attempts&&(!c.nextReview||c.nextReview<=Date.now())).map(([k])=>k));
+ let pool=QUESTION_BANK.filter(q=>q.difficulty!=="boss"&&(due.has(q.concept)||effectiveMastery(q.concept)<70));if(pool.length<12)pool=QUESTION_BANK.filter(q=>q.difficulty!=="boss");
+ flashQueue=pool.sort((a,b)=>priorityScore(b)-priorityScore(a)).slice(0,15);flashIndex=0;showView("flashcard-view");renderFlash()
+}
+function renderFlash(){
+ if(flashIndex>=flashQueue.length){state.history.push({date:Date.now(),type:"flashcards",count:flashQueue.length});awardAchievement("first");saveState();renderDashboard();return showView("dashboard-view")}
+ currentFlash=flashQueue[flashIndex];$("flash-progress").textContent=`${flashIndex+1} / ${flashQueue.length}`;$("flash-concept").textContent=currentFlash.concept;$("flash-front").textContent=currentFlash.q;$("flash-back").classList.add("hidden");$("flash-ratings").classList.add("hidden");$("reveal-card").classList.remove("hidden")
+}
+$("reveal-card").addEventListener("click",()=>{$("flash-back").innerHTML=`<strong>${esc(currentFlash.options[currentFlash.answer])}</strong><p>${esc(currentFlash.explanation)}</p>`;$("flash-back").classList.remove("hidden");$("flash-ratings").classList.remove("hidden");$("reveal-card").classList.add("hidden")});
+document.querySelectorAll("[data-rating]").forEach(b=>b.addEventListener("click",()=>{const cs=conceptState(currentFlash.concept),r=b.dataset.rating,map={again:[0.25,-7,3],hard:[1,1,7],good:[3,5,12],easy:[7,9,18]},[interval,delta,xp]=map[r];cs.attempts++;cs.lastSeen=Date.now();cs.mastery=Math.max(0,Math.min(100,(cs.mastery||0)+delta));cs.interval=interval;cs.nextReview=Date.now()+interval*86400000;state.answered++;ensureDaily();state.daily.reviews++;addXP(xp,`flashcard ${r}`);checkDailyBonus();saveState();flashIndex++;renderFlash()}));
+$("start-learn").addEventListener("click",()=>startSession("learn"));$("start-review").addEventListener("click",()=>startSession("review"));$("start-flashcards").addEventListener("click",startFlashcards);$("start-exam").addEventListener("click",()=>startSession("exam"));$("start-gauntlet").addEventListener("click",()=>startSession("gauntlet"));
+$("return-dashboard").addEventListener("click",()=>{renderDashboard();showView("dashboard-view")});$("retry-weak").addEventListener("click",()=>startSession("weak"));
+$("reset-progress").addEventListener("click",()=>{if(confirm("Reset all AZ-900 Quest progress, XP, mastery and achievements?")){localStorage.removeItem(STORAGE_KEY);OLD_KEYS.forEach(k=>localStorage.removeItem(k));state=defaultState();renderDashboard()}});
 renderDashboard();
